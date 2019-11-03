@@ -1,6 +1,7 @@
 package com.infoway.banking.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -21,7 +22,9 @@ public class Banco implements Serializable{
 	private String nome;
 	private List<Conta> contas;
 	
-	public Banco() {}
+	public Banco() {
+		this.contas = new ArrayList<Conta>();
+	}
 	
 	@Id
 	@Column(name = "codigo", nullable = false, length = 3)
