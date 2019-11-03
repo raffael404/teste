@@ -5,6 +5,8 @@ import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Length;
 
+import com.infoway.banking.entities.Banco;
+
 public class BancoDto {
 	
 	private String codigo;
@@ -12,9 +14,9 @@ public class BancoDto {
 	
 	public BancoDto() {}
 		
-	public BancoDto(String codigo, String nome) {
-		this.codigo = codigo;
-		this.nome = nome;
+	public BancoDto(Banco banco) {
+		this.codigo = banco.getCodigo();
+		this.nome = banco.getNome();
 	}
 
 	@NotEmpty(message = "Código não pode ser vazio.")

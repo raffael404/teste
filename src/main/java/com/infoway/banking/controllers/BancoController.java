@@ -82,7 +82,7 @@ public class BancoController {
 			return ResponseEntity.badRequest().body(response);
 		}
 
-		response.setData(new BancoDto(banco.get().getCodigo(), banco.get().getNome()));
+		response.setData(new BancoDto(banco.get()));
 		return ResponseEntity.ok(response);
 	}
 	
