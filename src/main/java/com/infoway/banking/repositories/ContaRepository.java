@@ -8,5 +8,5 @@ import com.infoway.banking.entities.Conta;
 
 public interface ContaRepository extends JpaRepository<Conta, Long> {
 	@Transactional(readOnly = true)
-	Conta findByNumeroAndBanco(String numero, Banco banco);
+	Conta findByBancoAndNumero(Banco banco, String numero);
 }
