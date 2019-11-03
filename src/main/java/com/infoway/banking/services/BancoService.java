@@ -18,14 +18,39 @@ public class BancoService {
 	@Autowired
 	private BancoRepository bancoRepository;
 	
+	/**
+	 * 
+	 * Cadastra um novo banco na base de dados.
+	 * 
+	 * @param banco
+	 * @return Banco
+	 */
 	public Banco persistir(Banco banco) {
 		log.info("Persistindo banco: {}", banco);
 		return bancoRepository.save(banco);
 	}
 	
-	public Optional<Banco> buscarPorCodigo(String codigo) {
+	/**
+	 * 
+	 * Retorna um banco, dado um código.
+	 * 
+	 * @param codigo
+	 * @return Optional<Banco>
+	 */
+	public Optional<Banco> buscar(String codigo) {
 		log.info("Buscando um banco com o codigo {}", codigo);
 		return bancoRepository.findById(codigo);
+	}
+	
+	/**
+	 * 
+	 * Remove um banco da base de dados.
+	 * 
+	 * @param codigo
+	 */
+	public void remover(String codigo) {
+		log.info("Removendo banco com o codigo {}", codigo);
+		bancoRepository.deleteById(codigo);
 	}
 	
 }

@@ -45,7 +45,7 @@ public class BancoController {
 	public ResponseEntity<Response<BancoDto>> cadastrar( @Valid @RequestBody BancoDto bancoDto, BindingResult result) {
 		log.info("Cadastrando banco: {}", bancoDto.toString());
 		
-		if (bancoService.buscarPorCodigo(bancoDto.getCodigo()).isPresent())
+		if (bancoService.buscar(bancoDto.getCodigo()).isPresent())
 			result.addError(new ObjectError("banco", "Código já existente."));
 		
 		Response<BancoDto> response = new Response<BancoDto>();
@@ -74,7 +74,7 @@ public class BancoController {
 	public ResponseEntity<Response<BancoDto>> buscarPorCodigo(@PathVariable("codigo") String codigo) {
 		log.info("Buscando banco por codigo: {}", codigo);
 		Response<BancoDto> response = new Response<BancoDto>();
-		Optional<Banco> banco = bancoService.buscarPorCodigo(codigo);
+		Optional<Banco> banco = bancoService.buscar(codigo);
 
 		if (!banco.isPresent()) {
 			log.info("Banco não encontrado para o codigo: {}", codigo);
