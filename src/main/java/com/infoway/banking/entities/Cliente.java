@@ -24,7 +24,7 @@ public class Cliente implements Serializable {
 	public Cliente() {}
 
 	@Id
-	@Column(name = "cpf", nullable = false)
+	@Column(name = "cpf", nullable = false, length = 11)
 	public String getCpf() {
 		return cpf;
 	}

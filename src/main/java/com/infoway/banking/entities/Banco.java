@@ -35,7 +35,7 @@ public class Banco implements Serializable{
 		this.codigo = codigo;
 	}
 	
-	@Column(name = "nome", nullable = false)
+	@Column(name = "nome", nullable = false, length = 50)
 	public String getNome() {
 		return nome;
 	}

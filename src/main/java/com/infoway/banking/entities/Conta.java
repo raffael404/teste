@@ -23,7 +23,7 @@ public class Conta implements Serializable {
 	private Long id;
 	private String numero;
 	private String senha;
-	private Double saldo;
+	private double saldo;
 	private Banco banco;
 	private Cliente cliente;
 	private List<Transacao> transacoes;
@@ -39,7 +39,7 @@ public class Conta implements Serializable {
 		this.id = id;
 	}
 	
-	@Column(name = "numero", nullable = false)
+	@Column(name = "numero", nullable = false, length = 12)
 	public String getNumero() {
 		return numero;
 	}
@@ -56,10 +56,10 @@ public class Conta implements Serializable {
 	}
 	
 	@Column(name = "saldo", nullable = false)
-	public Double getSaldo() {
+	public double getSaldo() {
 		return saldo;
 	}
-	public void setSaldo(Double saldo) {
+	public void setSaldo(double saldo) {
 		this.saldo = saldo;
 	}
 	
