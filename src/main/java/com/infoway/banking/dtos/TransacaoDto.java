@@ -3,6 +3,8 @@ package com.infoway.banking.dtos;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import com.infoway.banking.entities.Transacao;
+
 public class TransacaoDto {
 	
 	private Double valor;
@@ -10,6 +12,26 @@ public class TransacaoDto {
 	private String contaOrigem;
 	private String bancoDestino;
 	private String contaDestino;
+	
+	public TransacaoDto() {}
+	
+	public TransacaoDto(Transacao transacao) {
+		this.valor = transacao.getValor();
+		if (transacao.getOrigem() == null) {
+			this.bancoOrigem = "";
+			this.contaOrigem = "";
+		} else {
+			this.bancoOrigem = transacao.getOrigem().getBanco().getCodigo();
+			this.contaOrigem = transacao.getOrigem().getNumero();
+		}
+		if (transacao.getDestino() == null) {
+			this.bancoDestino = "";
+			this.contaDestino = "";
+		} else {
+			this.bancoDestino = transacao.getDestino().getBanco().getCodigo();
+			this.contaDestino = transacao.getDestino().getNumero();
+		}
+	}
 	
 	@NotNull(message = "Valor não pode ser vazio.")
 	public Double getValor() {
