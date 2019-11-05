@@ -41,7 +41,7 @@ public class ContaController {
 	
 	private ContaController() {}
 	
-	@PostMapping
+	@PostMapping(value = "/abrir")
 	public ResponseEntity<Response<ContaDto>> abrir(@Valid @RequestBody ContaDto contaDto, BindingResult result) {
 		log.info("Abrindo conta: {}", contaDto.toString());
 		
@@ -71,6 +71,28 @@ public class ContaController {
 		
 		contaDto.setId(conta.getId());
 		contaDto.setSaldo(0);
+		response.setData(contaDto);
+		return ResponseEntity.ok(response);
+	}
+	
+	@PostMapping(value = "/fechar")
+	public ResponseEntity<Response<ContaDto>> fechar(@Valid @RequestBody ContaDto contaDto, BindingResult result) {
+		log.info("Fechando conta: {}", contaDto.toString());
+		
+		Optional<Banco> banco = bancoService.buscar(contaDto.getCodigoBanco());
+		if (!banco.isPresent())
+			result.addError(new ObjectError("banco", "Banco inexistente."));
+		else if (!contaService.buscar(banco.get(), contaDto.getNumero()).isPresent())
+			result.addError(new ObjectError("conta", "Número de conta inexistente."));
+		
+		Response<ContaDto> response = new Response<ContaDto>();
+		if (result.hasErrors()) {
+			log.error("Erro validando dados da conta: {}", result.getAllErrors());
+			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		contaService.remover(banco.get(), contaDto.getNumero());
 		response.setData(contaDto);
 		return ResponseEntity.ok(response);
 	}
