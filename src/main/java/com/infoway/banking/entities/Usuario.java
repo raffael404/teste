@@ -3,6 +3,7 @@ package com.infoway.banking.entities;
 import javax.persistence.Column;
 
 public abstract class Usuario {
+	
 	private String senha;
 
 	@Column(name = "senha", nullable = false)
