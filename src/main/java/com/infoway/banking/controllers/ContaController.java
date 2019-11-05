@@ -1,5 +1,7 @@
 package com.infoway.banking.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -221,6 +223,35 @@ public class ContaController {
 		contaService.persistir(contaDestino.get());
 		
 		response.setData(transacaoDto);
+		return ResponseEntity.ok(response);
+	}
+	
+	@PostMapping(value = "/extrato")
+	public ResponseEntity<Response<List<TransacaoDto>>> extrato(@Valid @RequestBody ContaDto contaDto, BindingResult result) {
+		log.info("Buscando extrato da conta: {}", contaDto.toString());
+		
+		Optional<Banco> banco = bancoService.buscar(contaDto.getCodigoBanco());
+		Optional<Conta> conta = null;
+		if (!banco.isPresent())
+			result.addError(new ObjectError("banco", "Banco inexistente."));
+		else {
+			conta = contaService.buscar(banco.get(), contaDto.getNumero());
+			if (!contaService.buscar(banco.get(), contaDto.getNumero()).isPresent())
+				result.addError(new ObjectError("conta", "Número de conta inexistente."));
+		}
+		
+		Response<List<TransacaoDto>> response = new Response<List<TransacaoDto>>();
+		if (result.hasErrors()) {
+			log.error("Erro validando dados da conta: {}", result.getAllErrors());
+			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		List<TransacaoDto> transacoes = new ArrayList<TransacaoDto>();
+		transacaoService.buscarTodas(conta.get()).get().forEach(
+				transacao -> transacoes.add(new TransacaoDto(transacao)));
+				
+		response.setData(transacoes);
 		return ResponseEntity.ok(response);
 	}
 	
