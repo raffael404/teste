@@ -30,6 +30,14 @@ public class Conta implements Serializable {
 	
 	public Conta() {}
 	
+	public void sacar(double valor) {
+		this.saldo -= valor;
+	}
+	
+	public void depositar(double valor) {
+		this.saldo += valor;
+	}
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
