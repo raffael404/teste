@@ -35,7 +35,7 @@ public class ContaDto {
 	}
 
 	@NotEmpty(message = "Número não pode ser vazio.")
-	@Length(min = 1, max = 12, message = "Número deve conter entre 1 e 12 caracteres.")
+	@Length(min = 1, max = 8, message = "Número deve conter entre 1 e 8 caracteres.")
 	@Pattern(regexp = "[\\d]*", message = "Número deve conter apenas números.")
 	public String getNumero() {
 		return numero;

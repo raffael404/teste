@@ -47,7 +47,7 @@ public class Conta implements Serializable {
 		this.id = id;
 	}
 	
-	@Column(name = "numero", nullable = false, length = 12)
+	@Column(name = "numero", nullable = false, length = 8)
 	public String getNumero() {
 		return numero;
 	}
