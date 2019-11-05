@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.infoway.banking.entities.Banco;
 
-public class BancoDto {
+public class BancoDto extends UsuarioDto {
 	
 	private String codigo;
 	private String nome;
