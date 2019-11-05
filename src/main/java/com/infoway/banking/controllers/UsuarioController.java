@@ -20,6 +20,7 @@ import com.infoway.banking.entities.Cliente;
 import com.infoway.banking.responses.Response;
 import com.infoway.banking.services.BancoService;
 import com.infoway.banking.services.ClienteService;
+import com.infoway.banking.utils.SenhaUtils;
 
 @RestController
 @RequestMapping("/banking/usuario")
@@ -58,6 +59,7 @@ public class UsuarioController {
 		Cliente cliente = new Cliente();
 		cliente.setCpf(clienteDto.getCpf());
 		cliente.setNome(clienteDto.getNome());
+		cliente.setSenha(SenhaUtils.criptografar(clienteDto.getSenha()));
 		clienteService.persistir(cliente);
 		
 		response.setData(clienteDto);
@@ -89,8 +91,10 @@ public class UsuarioController {
 		Banco banco = new Banco();
 		banco.setCodigo(bancoDto.getCodigo());
 		banco.setNome(bancoDto.getNome());
+		banco.setSenha(SenhaUtils.criptografar(bancoDto.getSenha()));
 		bancoService.persistir(banco);
 		
+		bancoDto.setSenha(banco.getSenha());
 		response.setData(bancoDto);
 		return ResponseEntity.ok(response);
 	}
