@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.infoway.banking.dtos.AgenciaDto;
 import com.infoway.banking.dtos.BancoDto;
+import com.infoway.banking.entities.Agencia;
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.responses.Response;
 import com.infoway.banking.services.BancoService;
@@ -35,32 +37,37 @@ public class BancoController {
 	
 	/**
 	 * 
-	 * Cadastra um novo banco no sistema.
+	 * Cadastra uma nova agencia no sistema.
 	 * 
-	 * @param bancoDto
+	 * @param agenciaDto
+	 * @param senha
 	 * @param result
-	 * @return ResponseEntity<Response<BancoDto>>
+	 * @return ResponseEntity<Response<ClienteDto>>
 	 */
-	@PostMapping
-	public ResponseEntity<Response<BancoDto>> cadastrar( @Valid @RequestBody BancoDto bancoDto, BindingResult result) {
-		log.info("Cadastrando banco: {}", bancoDto.toString());
+	@PostMapping(value = "/cadastrar/agencia")
+	public ResponseEntity<Response<AgenciaDto>> cadastrarCliente(@Valid @RequestBody AgenciaDto agenciaDto, BindingResult result) {
+		log.info("Cadastrando agencia: {}", agenciaDto.toString());
 		
-		if (bancoService.buscar(bancoDto.getCodigo()).isPresent())
-			result.addError(new ObjectError("banco", "Código já existente."));
+		Optional<Banco> banco = bancoService.buscar(agenciaDto.getCodigoBanco());
+		if (!banco.isPresent())
+			result.addError(new ObjectError("banco", "Banco inexistente."));
 		
-		Response<BancoDto> response = new Response<BancoDto>();
+		Response<AgenciaDto> response = new Response<AgenciaDto>();
 		if (result.hasErrors()) {
-			log.error("Erro validando dados de cadastro do banco: {}", result.getAllErrors());
+			log.error("Erro validando dados da agencia: {}", result.getAllErrors());
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return ResponseEntity.badRequest().body(response);
 		}
 		
-		Banco banco = new Banco();
-		banco.setCodigo(bancoDto.getCodigo());
-		banco.setNome(bancoDto.getNome());
-		bancoService.persistir(banco);
+		Agencia agencia = new Agencia();
+		agencia.setCnpj(agenciaDto.getCnpj());
+		agencia.setNumero(agenciaDto.getNumero());
+		agencia.setBanco(banco.get());
 		
-		response.setData(bancoDto);
+		banco.get().getAgencias().add(agencia);
+		bancoService.persistir(banco.get());
+		
+		response.setData(agenciaDto);
 		return ResponseEntity.ok(response);
 	}
 	

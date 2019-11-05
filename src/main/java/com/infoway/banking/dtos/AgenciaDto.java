@@ -49,5 +49,10 @@ public class AgenciaDto {
 	public void setCodigoBanco(String codigoBanco) {
 		this.codigoBanco = codigoBanco;
 	}
+
+	@Override
+	public String toString() {
+		return "AgenciaDto [cnpj=" + cnpj + ", numero=" + numero + ", codigoBanco=" + codigoBanco + "]";
+	}
 	
 }
