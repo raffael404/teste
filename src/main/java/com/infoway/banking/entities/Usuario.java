@@ -1,7 +1,9 @@
 package com.infoway.banking.entities;
 
 import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 
+@MappedSuperclass
 public abstract class Usuario {
 	
 	private String senha;
