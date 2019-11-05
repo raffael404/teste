@@ -21,9 +21,11 @@ public class Banco extends Usuario implements Serializable{
 	private String codigo;
 	private String nome;
 	private List<Conta> contas;
+	private List<Agencia> agencias;
 	
 	public Banco() {
 		this.contas = new ArrayList<Conta>();
+		this.agencias = new ArrayList<Agencia>();
 	}
 	
 	@Id
@@ -49,6 +51,14 @@ public class Banco extends Usuario implements Serializable{
 	}
 	public void setContas(List<Conta> contas) {
 		this.contas = contas;
+	}
+	
+	@OneToMany(mappedBy = "banco", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	public List<Agencia> getAgencias() {
+		return agencias;
+	}
+	public void setAgencias(List<Agencia> agencias) {
+		this.agencias = agencias;
 	}
 
 	@Override
