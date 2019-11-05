@@ -1,6 +1,7 @@
 package com.infoway.banking.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +39,9 @@ public class TransacaoService {
 	 * @param conta
 	 * @return Optional<Cliente>
 	 */
-	public List<Transacao> buscarTodas(Conta conta) {
+	public Optional<List<Transacao>> buscarTodas(Conta conta) {
 		log.info("Buscando a lista de transações da conta {}", conta);
-		return transacaoRepository.findAllByOrigemOrDestino(conta, conta);
+		return Optional.ofNullable(transacaoRepository.findAllByOrigemOrDestino(conta, conta));
 	}
 	
 }
