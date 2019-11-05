@@ -1,5 +1,7 @@
 package com.infoway.banking.services;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +39,9 @@ public class ContaService {
 	 * @param numero
 	 * @return Conta
 	 */
-	public Conta buscar(Banco banco, String numero) {
+	public Optional<Conta> buscar(Banco banco, String numero) {
 		log.info("Buscando uma conta no banco {} com o numero {}", banco.getNome(), numero);
-		return contaRepository.findByBancoAndNumero(banco, numero);
+		return Optional.ofNullable(contaRepository.findByBancoAndNumero(banco, numero));
 	}
 	
 	/**
