@@ -16,13 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.infoway.banking.dtos.ContaDto;
+import com.infoway.banking.dtos.TransacaoDto;
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.entities.Cliente;
 import com.infoway.banking.entities.Conta;
+import com.infoway.banking.entities.Transacao;
+import com.infoway.banking.enums.TipoTransacao;
 import com.infoway.banking.responses.Response;
 import com.infoway.banking.services.BancoService;
 import com.infoway.banking.services.ClienteService;
 import com.infoway.banking.services.ContaService;
+import com.infoway.banking.services.TransacaoService;
 
 @RestController
 @RequestMapping("/banking/conta")
@@ -38,6 +42,9 @@ public class ContaController {
 	
 	@Autowired
 	private ClienteService clienteService;
+	
+	@Autowired
+	private TransacaoService transacaoService;
 	
 	private ContaController() {}
 	
@@ -94,6 +101,43 @@ public class ContaController {
 		
 		contaService.remover(banco.get(), contaDto.getNumero());
 		response.setData(contaDto);
+		return ResponseEntity.ok(response);
+	}
+	
+	@PostMapping(value = "/depositar")
+	public ResponseEntity<Response<TransacaoDto>> depositar(@Valid @RequestBody TransacaoDto transacaoDto, BindingResult result) {
+		log.info("Depositando R$ {} na conta {} no banco {}", transacaoDto.getValor(),
+				transacaoDto.getContaDestino(), transacaoDto.getBancoDestino());
+				
+		Optional<Banco> banco = bancoService.buscar(transacaoDto.getBancoDestino());
+		Optional<Conta> conta = null;
+		if (!banco.isPresent())
+			result.addError(new ObjectError("banco", "Banco de destino inexistente."));
+		else {
+			conta = contaService.buscar(banco.get(), transacaoDto.getContaDestino());
+			if (!conta.isPresent())
+				result.addError(new ObjectError("conta", "Conta de destino inexistente."));
+			
+		}
+		
+		Response<TransacaoDto> response = new Response<TransacaoDto>();
+		if (result.hasErrors()) {
+			log.error("Erro validando dados da conta de destino: {}", result.getAllErrors());
+			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		Transacao transacao = new Transacao();
+		transacao.setDestino(conta.get());
+		transacao.setTipo(TipoTransacao.DEPOSITO);
+		transacao.setValor(transacaoDto.getValor());
+		transacaoService.persistir(transacao);
+		
+		conta.get().depositar(transacaoDto.getValor());
+		contaService.persistir(conta.get());
+		System.out.println(conta.get().getSaldo());
+		
+		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
 	}
 	
