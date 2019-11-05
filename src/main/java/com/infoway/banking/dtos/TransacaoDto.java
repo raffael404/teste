@@ -4,9 +4,14 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.infoway.banking.entities.Transacao;
+import com.infoway.banking.enums.TipoTransacao;
+import com.infoway.banking.utils.DataUtils;
 
 public class TransacaoDto {
 	
+	private Long id;
+	private String data;
+	private TipoTransacao tipo;
 	private Double valor;
 	private String bancoOrigem;
 	private String contaOrigem;
@@ -16,6 +21,9 @@ public class TransacaoDto {
 	public TransacaoDto() {}
 	
 	public TransacaoDto(Transacao transacao) {
+		this.id = transacao.getId();
+		this.data = DataUtils.converterParaString(transacao.getData());
+		this.tipo = transacao.getTipo();
 		this.valor = transacao.getValor();
 		if (transacao.getOrigem() == null) {
 			this.bancoOrigem = "";
@@ -33,6 +41,27 @@ public class TransacaoDto {
 		}
 	}
 	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getData() {
+		return data;
+	}
+	public void setData(String data) {
+		this.data = data;
+	}
+
+	public TipoTransacao getTipo() {
+		return tipo;
+	}
+	public void setTipo(TipoTransacao tipo) {
+		this.tipo = tipo;
+	}
+
 	@NotNull(message = "Valor não pode ser vazio.")
 	public Double getValor() {
 		return valor;

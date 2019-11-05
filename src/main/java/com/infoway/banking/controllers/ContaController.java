@@ -29,6 +29,7 @@ import com.infoway.banking.services.BancoService;
 import com.infoway.banking.services.ClienteService;
 import com.infoway.banking.services.ContaService;
 import com.infoway.banking.services.TransacaoService;
+import com.infoway.banking.utils.DataUtils;
 
 @RestController
 @RequestMapping("/banking/conta")
@@ -119,6 +120,8 @@ public class ContaController {
 			conta = contaService.buscar(banco.get(), transacaoDto.getContaDestino());
 			if (!conta.isPresent())
 				result.addError(new ObjectError("conta", "Conta de destino inexistente."));
+			if (!conta.get().depositar(transacaoDto.getValor()))
+				result.addError(new ObjectError("conta", "Valor para depósito inválido."));
 		}
 		
 		Response<TransacaoDto> response = new Response<TransacaoDto>();
@@ -133,10 +136,11 @@ public class ContaController {
 		transacao.setTipo(TipoTransacao.DEPOSITO);
 		transacao.setValor(transacaoDto.getValor());
 		transacaoService.persistir(transacao);
-		
-		conta.get().depositar(transacaoDto.getValor());
 		contaService.persistir(conta.get());
 		
+		transacaoDto.setId(transacao.getId());
+		transacaoDto.setData(DataUtils.converterParaString(transacao.getData()));
+		transacaoDto.setTipo(transacao.getTipo());
 		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
 	}
@@ -154,6 +158,8 @@ public class ContaController {
 			conta = contaService.buscar(banco.get(), transacaoDto.getContaOrigem());
 			if (!conta.isPresent())
 				result.addError(new ObjectError("conta", "Conta de origem inexistente."));
+			if (!conta.get().sacar(transacaoDto.getValor()))
+				result.addError(new ObjectError("conta", "Saldo insuficiente para saque."));
 		}
 		
 		Response<TransacaoDto> response = new Response<TransacaoDto>();
@@ -168,10 +174,11 @@ public class ContaController {
 		transacao.setTipo(TipoTransacao.SAQUE);
 		transacao.setValor(transacaoDto.getValor());
 		transacaoService.persistir(transacao);
-		
-		conta.get().sacar(transacaoDto.getValor());
 		contaService.persistir(conta.get());
 		
+		transacaoDto.setId(transacao.getId());
+		transacaoDto.setData(DataUtils.converterParaString(transacao.getData()));
+		transacaoDto.setTipo(transacao.getTipo());
 		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
 	}
@@ -190,6 +197,8 @@ public class ContaController {
 			contaOrigem = contaService.buscar(bancoOrigem.get(), transacaoDto.getContaOrigem());
 			if (!contaOrigem.isPresent())
 				result.addError(new ObjectError("conta", "Conta de origem inexistente."));
+			if (!contaOrigem.get().sacar(transacaoDto.getValor()))
+				result.addError(new ObjectError("conta", "Saldo insuficiente para transferência."));
 		}
 		
 		Optional<Banco> bancoDestino = bancoService.buscar(transacaoDto.getBancoDestino());
@@ -200,6 +209,8 @@ public class ContaController {
 			contaDestino = contaService.buscar(bancoDestino.get(), transacaoDto.getContaDestino());
 			if (!contaDestino.isPresent())
 				result.addError(new ObjectError("conta", "Conta de destino inexistente."));
+			if (!contaDestino.get().depositar(transacaoDto.getValor()))
+				result.addError(new ObjectError("conta", "Valor inválido para transferência."));
 		}
 		
 		Response<TransacaoDto> response = new Response<TransacaoDto>();
@@ -215,13 +226,13 @@ public class ContaController {
 		transacao.setTipo(TipoTransacao.TRANSFERENCIA);
 		transacao.setValor(transacaoDto.getValor());
 		transacaoService.persistir(transacao);
-		System.out.println(transacao);
 		
-		contaOrigem.get().sacar(transacaoDto.getValor());
-		contaDestino.get().depositar(transacaoDto.getValor());
 		contaService.persistir(contaOrigem.get());
 		contaService.persistir(contaDestino.get());
 		
+		transacaoDto.setId(transacao.getId());
+		transacaoDto.setData(DataUtils.converterParaString(transacao.getData()));
+		transacaoDto.setTipo(transacao.getTipo());
 		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
 	}
