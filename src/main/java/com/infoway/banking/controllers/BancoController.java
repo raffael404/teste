@@ -40,17 +40,30 @@ public class BancoController {
 	 * Cadastra uma nova agencia no sistema.
 	 * 
 	 * @param agenciaDto
-	 * @param senha
 	 * @param result
-	 * @return ResponseEntity<Response<ClienteDto>>
+	 * @return ResponseEntity<Response<AgenciaDto>>
 	 */
 	@PostMapping(value = "/cadastrar/agencia")
-	public ResponseEntity<Response<AgenciaDto>> cadastrarCliente(@Valid @RequestBody AgenciaDto agenciaDto, BindingResult result) {
+	public ResponseEntity<Response<AgenciaDto>> cadastrarAgencia(@Valid @RequestBody AgenciaDto agenciaDto, BindingResult result) {
 		log.info("Cadastrando agencia: {}", agenciaDto.toString());
 		
 		Optional<Banco> banco = bancoService.buscar(agenciaDto.getCodigoBanco());
 		if (!banco.isPresent())
 			result.addError(new ObjectError("banco", "Banco inexistente."));
+		else {
+			for (Agencia agencia : banco.get().getAgencias()) {
+				if (agencia.getNumero() == agenciaDto.getNumero()) {
+					result.addError(new ObjectError("agencia", "Número já existente."));
+					break;
+				}
+			}
+			for (Agencia agencia : banco.get().getAgencias()) {
+				if (agencia.getCnpj() == agenciaDto.getCnpj()) {
+					result.addError(new ObjectError("agencia", "CNPJ já existente."));
+					break;
+				}
+			}
+		}
 		
 		Response<AgenciaDto> response = new Response<AgenciaDto>();
 		if (result.hasErrors()) {
