@@ -23,9 +23,10 @@ import com.infoway.banking.entities.Agencia;
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.responses.Response;
 import com.infoway.banking.services.BancoService;
+import com.infoway.banking.utils.SenhaUtils;
 
 @RestController
-@RequestMapping("/banking/bancos")
+@RequestMapping("/banking/banco")
 public class BancoController {
 	
 	private static final Logger log = LoggerFactory.getLogger(BancoController.class);
@@ -51,6 +52,8 @@ public class BancoController {
 		if (!banco.isPresent())
 			result.addError(new ObjectError("banco", "Banco inexistente."));
 		else {
+			if (!SenhaUtils.verificarValidade(agenciaDto.getSenha(), banco.get().getSenha()))
+				result.addError(new ObjectError("banco", "Senha inválida."));
 			for (Agencia agencia : banco.get().getAgencias()) {
 				if (agencia.getNumero() == agenciaDto.getNumero()) {
 					result.addError(new ObjectError("agencia", "Número já existente."));

@@ -7,21 +7,21 @@ import org.hibernate.validator.constraints.Length;
 
 import com.infoway.banking.entities.Conta;
 
-public class ContaDto {
+public class ContaDto extends DadoProtegido {
 	
 	private Long id;
 	private String numero;
-	private String senha;
-	private double saldo;
+	private Double saldo;
 	private String codigoBanco;
 	private String cpfCliente;
 	
-	public ContaDto() {}
+	public ContaDto() {
+		this.saldo = 0.0;
+	}
 	
 	public ContaDto(Conta conta) {
 		this.id = conta.getId();
 		this.numero = conta.getNumero();
-		this.senha = conta.getSenha();
 		this.saldo = conta.getSaldo();
 		this.codigoBanco = conta.getBanco().getCodigo();
 		this.cpfCliente = conta.getCliente().getCpf();
@@ -44,19 +44,10 @@ public class ContaDto {
 		this.numero = numero;
 	}
 	
-	@NotEmpty(message = "Senha não pode ser vazia.")
-	@Length(min = 1, max = 255, message = "Senha deve conter entre 1 e 255 caracteres.")
-	public String getSenha() {
-		return senha;
-	}
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
-	
-	public double getSaldo() {
+	public Double getSaldo() {
 		return saldo;
 	}
-	public void setSaldo(double saldo) {
+	public void setSaldo(Double saldo) {
 		this.saldo = saldo;
 	}
 	
@@ -78,7 +69,7 @@ public class ContaDto {
 
 	@Override
 	public String toString() {
-		return "ContaDto [id=" + id + ", numero=" + numero + ", senha=" + senha + ", saldo=" + saldo + ", codigoBanco="
+		return "ContaDto [id=" + id + ", numero=" + numero + ", saldo=" + saldo + ", codigoBanco="
 				+ codigoBanco + ", cpfCliente=" + cpfCliente + "]";
 	}
 	

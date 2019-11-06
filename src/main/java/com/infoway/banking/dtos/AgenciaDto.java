@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.br.CNPJ;
 
 import com.infoway.banking.entities.Agencia;
 
-public class AgenciaDto {
+public class AgenciaDto extends DadoProtegido {
 	
 	private String cnpj;
 	private String numero;

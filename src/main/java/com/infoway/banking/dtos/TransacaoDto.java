@@ -7,7 +7,7 @@ import com.infoway.banking.entities.Transacao;
 import com.infoway.banking.enums.TipoTransacao;
 import com.infoway.banking.utils.DataUtils;
 
-public class TransacaoDto {
+public class TransacaoDto extends DadoProtegido {
 	
 	private Long id;
 	private String data;
