@@ -152,7 +152,7 @@ public class ContaController {
 			conta = contaService.buscar(banco.get(), transacaoDto.getContaDestino());
 			if (!conta.isPresent())
 				result.addError(new ObjectError("conta", "Conta de destino inexistente."));
-			if (!conta.get().depositar(transacaoDto.getValor()))
+			if (!conta.get().creditar(transacaoDto.getValor()))
 				result.addError(new ObjectError("conta", "Valor para depósito inválido."));
 		}
 		
@@ -202,7 +202,7 @@ public class ContaController {
 				if (!SenhaUtils.verificarValidade(transacaoDto.getSenha(), 
 						conta.get().getCliente().getSenha()))
 					result.addError(new ObjectError("conta", "Senha inválida."));
-				else if (!conta.get().sacar(transacaoDto.getValor()))
+				else if (!conta.get().debitar(transacaoDto.getValor()))
 					result.addError(new ObjectError("conta", "Saldo insuficiente para saque."));
 			}
 		}
@@ -253,7 +253,7 @@ public class ContaController {
 			else if (!SenhaUtils.verificarValidade(transacaoDto.getSenha(),
 					contaOrigem.get().getCliente().getSenha()))
 				result.addError(new ObjectError("conta", "Senha inválida."));
-			else if (!contaOrigem.get().sacar(transacaoDto.getValor()))
+			else if (!contaOrigem.get().debitar(transacaoDto.getValor()))
 				result.addError(new ObjectError("conta", "Saldo insuficiente para transferência."));
 		}
 		
@@ -265,7 +265,7 @@ public class ContaController {
 			contaDestino = contaService.buscar(bancoDestino.get(), transacaoDto.getContaDestino());
 			if (!contaDestino.isPresent())
 				result.addError(new ObjectError("conta", "Conta de destino inexistente."));
-			if (!contaDestino.get().depositar(transacaoDto.getValor()))
+			if (!contaDestino.get().creditar(transacaoDto.getValor()))
 				result.addError(new ObjectError("conta", "Valor inválido para transferência."));
 		}
 		

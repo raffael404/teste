@@ -26,14 +26,14 @@ public class Conta implements Serializable {
 	
 	public Conta() {}
 	
-	public boolean sacar(double valor) {
+	public boolean debitar(double valor) {
 		if (valor <= 0 || valor > this.saldo)
 			return false;
 		this.saldo -= valor;
 		return true;
 	}
 	
-	public boolean depositar(double valor) {
+	public boolean creditar(double valor) {
 		if (valor <= 0)
 			return false;
 		this.saldo += valor;
