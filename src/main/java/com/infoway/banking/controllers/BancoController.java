@@ -1,5 +1,6 @@
 package com.infoway.banking.controllers;
 
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -7,18 +8,16 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.infoway.banking.dtos.AgenciaDto;
-import com.infoway.banking.dtos.BancoDto;
 import com.infoway.banking.entities.Agencia;
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.responses.Response;
@@ -34,35 +33,44 @@ public class BancoController {
 	@Autowired
 	private BancoService bancoService;
 	
+	@Autowired
+	private MessageSource ms;
+	
 	public BancoController() {}
 	
 	/**
 	 * 
 	 * Cadastra uma nova agencia no sistema.
 	 * 
+	 * @param locale
 	 * @param agenciaDto
 	 * @param result
 	 * @return ResponseEntity<Response<AgenciaDto>>
 	 */
 	@PostMapping(value = "/cadastrar/agencia")
-	public ResponseEntity<Response<AgenciaDto>> cadastrarAgencia(@Valid @RequestBody AgenciaDto agenciaDto, BindingResult result) {
+	public ResponseEntity<Response<AgenciaDto>> cadastrarAgencia(Locale locale,
+			@Valid @RequestBody AgenciaDto agenciaDto, BindingResult result) {
 		log.info("Cadastrando agencia: {}", agenciaDto.toString());
 		
 		Optional<Banco> banco = bancoService.buscar(agenciaDto.getCodigoBanco());
 		if (!banco.isPresent())
-			result.addError(new ObjectError("banco", "Banco inexistente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+					ms.getMessage("error.nonexistent.bank", null, locale)));
 		else {
 			if (!SenhaUtils.verificarValidade(agenciaDto.getSenha(), banco.get().getSenha()))
-				result.addError(new ObjectError("banco", "Senha inválida."));
+				result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+						ms.getMessage("error.invalid.password", null, locale)));
 			for (Agencia agencia : banco.get().getAgencias()) {
 				if (agencia.getNumero() == agenciaDto.getNumero()) {
-					result.addError(new ObjectError("agencia", "Número já existente."));
+					result.addError(new ObjectError(ms.getMessage("error.label.branch", null, locale),
+							ms.getMessage("error.existing.number", null, locale)));
 					break;
 				}
 			}
 			for (Agencia agencia : banco.get().getAgencias()) {
 				if (agencia.getCnpj() == agenciaDto.getCnpj()) {
-					result.addError(new ObjectError("agencia", "CNPJ já existente."));
+					result.addError(new ObjectError(ms.getMessage("error.label.branch", null, locale),
+							ms.getMessage("error.existing.cnpj", null, locale)));
 					break;
 				}
 			}
@@ -84,28 +92,6 @@ public class BancoController {
 		bancoService.persistir(banco.get());
 		
 		response.setData(agenciaDto);
-		return ResponseEntity.ok(response);
-	}
-	
-	/**
-	 * Retorna um banco, dado um código.
-	 * 
-	 * @param codigo
-	 * @return ResponseEntity<Response<BancoDto>>
-	 */
-	@GetMapping(value = "/codigo/{codigo}")
-	public ResponseEntity<Response<BancoDto>> buscarPorCodigo(@PathVariable("codigo") String codigo) {
-		log.info("Buscando banco por codigo: {}", codigo);
-		Response<BancoDto> response = new Response<BancoDto>();
-		Optional<Banco> banco = bancoService.buscar(codigo);
-
-		if (!banco.isPresent()) {
-			log.info("Banco não encontrado para o codigo: {}", codigo);
-			response.getErrors().add("Banco não encontrado para o codigo " + codigo);
-			return ResponseEntity.badRequest().body(response);
-		}
-
-		response.setData(new BancoDto(banco.get()));
 		return ResponseEntity.ok(response);
 	}
 	

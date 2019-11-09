@@ -2,6 +2,7 @@ package com.infoway.banking.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -9,6 +10,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -50,35 +52,44 @@ public class ContaController {
 	@Autowired
 	private TransacaoService transacaoService;
 	
+	@Autowired
+	private MessageSource ms;
+	
 	private ContaController() {}
 	
 	/**
 	 * 
 	 * Cria uma nova conta na base de dados associada à um cliente e um banco previamente cadastrados.
 	 * 
+	 * @param locale
 	 * @param contaDto
 	 * @param result
 	 * @return ResponseEntity<Response<ContaDto>>
 	 */
 	@PostMapping(value = "/abrir")
-	public ResponseEntity<Response<ContaDto>> abrir(@Valid @RequestBody ContaDto contaDto, BindingResult result) {
+	public ResponseEntity<Response<ContaDto>> abrir(Locale locale,
+			@Valid @RequestBody ContaDto contaDto, BindingResult result) {
 		log.info("Abrindo conta: {}", contaDto.toString());
 		
 		Optional<Cliente> cliente = clienteService.buscar(contaDto.getCpfCliente());
 		if(!cliente.isPresent())
-			result.addError(new ObjectError("cliente", "Cliente inexistente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.client", null, locale),
+					ms.getMessage("error.nonexistent.client", null, locale)));
 		else if (!SenhaUtils.verificarValidade(contaDto.getSenha(), cliente.get().getSenha()))
-			result.addError(new ObjectError("cliente", "Senha inválida."));
+			result.addError(new ObjectError(ms.getMessage("error.label.client", null, locale),
+					ms.getMessage("error.invalid.password", null, locale)));
 		
 		Optional<Banco> banco = bancoService.buscar(contaDto.getCodigoBanco());
 		if (!banco.isPresent())
-			result.addError(new ObjectError("banco", "Banco inexistente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+					ms.getMessage("error.nonexistent.bank", null, locale)));
 		else if (contaService.buscar(banco.get(), contaDto.getNumero()).isPresent())
-			result.addError(new ObjectError("conta", "Número de conta já existente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+					ms.getMessage("error.existing.account", null, locale)));
 		
 		Response<ContaDto> response = new Response<ContaDto>();
 		if (result.hasErrors()) {
-			log.error("Erro validando dados de cadastro da conta: {}", result.getAllErrors());
+			log.error("Erro validando dados da conta: {}", result.getAllErrors());
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -100,23 +111,28 @@ public class ContaController {
 	 * 
 	 * Remove uma conta da base de dados.
 	 * 
+	 * @param locale
 	 * @param contaDto
 	 * @param result
 	 * @return ResponseEntity<Response<ContaDto>>
 	 */
 	@PostMapping(value = "/fechar")
-	public ResponseEntity<Response<ContaDto>> fechar(@Valid @RequestBody ContaDto contaDto, BindingResult result) {
+	public ResponseEntity<Response<ContaDto>> fechar(Locale locale,
+			@Valid @RequestBody ContaDto contaDto, BindingResult result) {
 		log.info("Fechando conta: {}", contaDto.toString());
 		
 		Optional<Banco> banco = bancoService.buscar(contaDto.getCodigoBanco());
 		if (!banco.isPresent())
-			result.addError(new ObjectError("banco", "Banco inexistente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+					ms.getMessage("error.nonexistent.bank", null, locale)));
 		else {
 			if (!SenhaUtils.verificarValidade(contaDto.getSenha(), 
 					clienteService.buscar(contaDto.getCpfCliente()).get().getSenha()))
-				result.addError(new ObjectError("cliente", "Senha inválida."));
+				result.addError(new ObjectError(ms.getMessage("error.label.client", null, locale),
+						ms.getMessage("error.invalid.password", null, locale)));
 			else if (!contaService.buscar(banco.get(), contaDto.getNumero()).isPresent())
-				result.addError(new ObjectError("conta", "Número de conta inexistente."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.nonexistent.account", null, locale)));
 		}
 		
 		Response<ContaDto> response = new Response<ContaDto>();
@@ -135,30 +151,35 @@ public class ContaController {
 	 * 
 	 * Aumenta o saldo de uma conta por um valor dado.
 	 * 
+	 * @param locale
 	 * @param transacaoDto
 	 * @param result
 	 * @return ResponseEntity<Response<TransacaoDto>>
 	 */
 	@PostMapping(value = "/depositar")
-	public ResponseEntity<Response<TransacaoDto>> depositar(@Valid @RequestBody TransacaoDto transacaoDto, BindingResult result) {
+	public ResponseEntity<Response<TransacaoDto>> depositar(Locale locale,
+			@Valid @RequestBody TransacaoDto transacaoDto, BindingResult result) {
 		log.info("Depositando R$ {} na conta {} no banco {}", transacaoDto.getValor(),
 				transacaoDto.getContaDestino(), transacaoDto.getBancoDestino());
 				
 		Optional<Banco> banco = bancoService.buscar(transacaoDto.getBancoDestino());
 		Optional<Conta> conta = null;
 		if (!banco.isPresent())
-			result.addError(new ObjectError("banco", "Banco de destino inexistente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+					ms.getMessage("error.nonexistent.bank", null, locale)));
 		else {
 			conta = contaService.buscar(banco.get(), transacaoDto.getContaDestino());
 			if (!conta.isPresent())
-				result.addError(new ObjectError("conta", "Conta de destino inexistente."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.nonexistent.account", null, locale)));
 			if (!conta.get().creditar(transacaoDto.getValor()))
-				result.addError(new ObjectError("conta", "Valor para depósito inválido."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.invalid.value", null, locale)));
 		}
 		
 		Response<TransacaoDto> response = new Response<TransacaoDto>();
 		if (result.hasErrors()) {
-			log.error("Erro validando dados da conta de destino: {}", result.getAllErrors());
+			log.error("Erro validando dados da conta: {}", result.getAllErrors());
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -171,7 +192,7 @@ public class ContaController {
 		contaService.persistir(conta.get());
 		
 		transacaoDto.setId(transacao.getId());
-		transacaoDto.setData(DataUtils.converterParaString(transacao.getData()));
+		transacaoDto.setData(DataUtils.converterParaString(transacao.getData(), locale));
 		transacaoDto.setTipo(transacao.getTipo());
 		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
@@ -181,35 +202,41 @@ public class ContaController {
 	 * 
 	 * Reduz o saldo de uma conta por um valor dado.
 	 * 
+	 * @param locale
 	 * @param transacaoDto
 	 * @param result
 	 * @return ResponseEntity<Response<TransacaoDto>>
 	 */
 	@PostMapping(value = "/sacar")
-	public ResponseEntity<Response<TransacaoDto>> sacar(@Valid @RequestBody TransacaoDto transacaoDto, BindingResult result) {
+	public ResponseEntity<Response<TransacaoDto>> sacar(Locale locale,
+			@Valid @RequestBody TransacaoDto transacaoDto, BindingResult result) {
 		log.info("Sacando R$ {} na conta {} no banco {}", transacaoDto.getValor(),
 				transacaoDto.getContaOrigem(), transacaoDto.getBancoOrigem());
 				
 		Optional<Banco> banco = bancoService.buscar(transacaoDto.getBancoOrigem());
 		Optional<Conta> conta = null;
 		if (!banco.isPresent())
-			result.addError(new ObjectError("banco", "Banco de origem inexistente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+					ms.getMessage("error.nonexistent.bank", null, locale)));
 		else {
 			conta = contaService.buscar(banco.get(), transacaoDto.getContaOrigem());
 			if (!conta.isPresent())
-				result.addError(new ObjectError("conta", "Conta de origem inexistente."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.nonexistent.account", null, locale)));
 			else {
 				if (!SenhaUtils.verificarValidade(transacaoDto.getSenha(), 
 						conta.get().getCliente().getSenha()))
-					result.addError(new ObjectError("conta", "Senha inválida."));
+					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+							ms.getMessage("error.invalid.password", null, locale)));
 				else if (!conta.get().debitar(transacaoDto.getValor()))
-					result.addError(new ObjectError("conta", "Saldo insuficiente para saque."));
+					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+							ms.getMessage("error.invalid.balance", null, locale)));
 			}
 		}
 		
 		Response<TransacaoDto> response = new Response<TransacaoDto>();
 		if (result.hasErrors()) {
-			log.error("Erro validando dados da conta de origem: {}", result.getAllErrors());
+			log.error("Erro validando dados da conta: {}", result.getAllErrors());
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -222,7 +249,7 @@ public class ContaController {
 		contaService.persistir(conta.get());
 		
 		transacaoDto.setId(transacao.getId());
-		transacaoDto.setData(DataUtils.converterParaString(transacao.getData()));
+		transacaoDto.setData(DataUtils.converterParaString(transacao.getData(), locale));
 		transacaoDto.setTipo(transacao.getTipo());
 		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
@@ -232,12 +259,14 @@ public class ContaController {
 	 * 
 	 * Reduz o saldo de uma conta de origem e aumenta o saldo de uma conta de destino por um dado valor.
 	 * 
+	 * @param locale
 	 * @param transacaoDto
 	 * @param result
-	 * @return
+	 * @return ResponseEntity<Response<TransacaoDto>>
 	 */
 	@PostMapping(value = "/transferir")
-	public ResponseEntity<Response<TransacaoDto>> transferir(@Valid @RequestBody TransacaoDto transacaoDto, BindingResult result) {
+	public ResponseEntity<Response<TransacaoDto>> transferir(Locale locale,
+			@Valid @RequestBody TransacaoDto transacaoDto, BindingResult result) {
 		log.info("Transferindo R$ {} da conta {} no banco {} para a conta {} no banco {}", transacaoDto.getValor(),
 				transacaoDto.getContaOrigem(), transacaoDto.getBancoOrigem(),
 				transacaoDto.getContaDestino(), transacaoDto.getBancoDestino());
@@ -245,33 +274,41 @@ public class ContaController {
 		Optional<Banco> bancoOrigem = bancoService.buscar(transacaoDto.getBancoOrigem());
 		Optional<Conta> contaOrigem = null;
 		if (!bancoOrigem.isPresent())
-			result.addError(new ObjectError("banco", "Banco de origem inexistente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+					ms.getMessage("error.nonexistent.bank.origin", null, locale)));
 		else {
 			contaOrigem = contaService.buscar(bancoOrigem.get(), transacaoDto.getContaOrigem());
 			if (!contaOrigem.isPresent())
-				result.addError(new ObjectError("conta", "Conta de origem inexistente."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.nonexistent.account.origin", null, locale)));
 			else if (!SenhaUtils.verificarValidade(transacaoDto.getSenha(),
 					contaOrigem.get().getCliente().getSenha()))
-				result.addError(new ObjectError("conta", "Senha inválida."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.invalid.password", null, locale)));
 			else if (!contaOrigem.get().debitar(transacaoDto.getValor()))
-				result.addError(new ObjectError("conta", "Saldo insuficiente para transferência."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.invalid.balance", null, locale)));
 		}
 		
 		Optional<Banco> bancoDestino = bancoService.buscar(transacaoDto.getBancoDestino());
 		Optional<Conta> contaDestino = null;
 		if (!bancoDestino.isPresent())
-			result.addError(new ObjectError("banco", "Banco de destino inexistente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+					ms.getMessage("error.nonexistent.bank.destination", null, locale)));
 		else {
 			contaDestino = contaService.buscar(bancoDestino.get(), transacaoDto.getContaDestino());
 			if (!contaDestino.isPresent())
-				result.addError(new ObjectError("conta", "Conta de destino inexistente."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.nonexistent.account.destination", null, locale)));
 			if (!contaDestino.get().creditar(transacaoDto.getValor()))
-				result.addError(new ObjectError("conta", "Valor inválido para transferência."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.invalid.value", null, locale)));
 		}
 		
 		if (transacaoDto.getBancoOrigem() == transacaoDto.getBancoDestino()
 				&& transacaoDto.getContaOrigem() == transacaoDto.getContaDestino())
-			result.addError(new ObjectError("conta", "Conta de origem não pode ser igual ao destino."));
+			result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+					ms.getMessage("error.equal.account", null, locale)));
 		
 		Response<TransacaoDto> response = new Response<TransacaoDto>();
 		if (result.hasErrors()) {
@@ -291,7 +328,7 @@ public class ContaController {
 		contaService.persistir(contaDestino.get());
 		
 		transacaoDto.setId(transacao.getId());
-		transacaoDto.setData(DataUtils.converterParaString(transacao.getData()));
+		transacaoDto.setData(DataUtils.converterParaString(transacao.getData(), locale));
 		transacaoDto.setTipo(transacao.getTipo());
 		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
@@ -301,24 +338,29 @@ public class ContaController {
 	 * 
 	 * Retorna a lista de transações associadas à uma dada conta.
 	 * 
+	 * @param locale
 	 * @param contaDto
 	 * @param result
 	 * @return ResponseEntity<Response<List<TransacaoDto>>>
 	 */
 	@PostMapping(value = "/extrato")
-	public ResponseEntity<Response<List<TransacaoDto>>> extrato(@Valid @RequestBody ContaDto contaDto, BindingResult result) {
+	public ResponseEntity<Response<List<TransacaoDto>>> extrato(Locale locale,
+			@Valid @RequestBody ContaDto contaDto, BindingResult result) {
 		log.info("Buscando extrato da conta: {}", contaDto.toString());
 		
 		Optional<Banco> banco = bancoService.buscar(contaDto.getCodigoBanco());
 		Optional<Conta> conta = null;
 		if (!banco.isPresent())
-			result.addError(new ObjectError("banco", "Banco inexistente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+					ms.getMessage("error.nonexistent.bank", null, locale)));
 		else {
 			conta = contaService.buscar(banco.get(), contaDto.getNumero());
 			if (!conta.isPresent())
-				result.addError(new ObjectError("conta", "Número de conta inexistente."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.nonexistent.account", null, locale)));
 			else if (!SenhaUtils.verificarValidade(contaDto.getSenha(), conta.get().getCliente().getSenha()))
-				result.addError(new ObjectError("conta", "Senha inválida."));
+				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
+						ms.getMessage("error.invalid.password", null, locale)));
 		}
 		
 		Response<List<TransacaoDto>> response = new Response<List<TransacaoDto>>();
@@ -330,7 +372,7 @@ public class ContaController {
 		
 		List<TransacaoDto> transacoes = new ArrayList<TransacaoDto>();
 		transacaoService.buscarTodas(conta.get()).get().forEach(
-				transacao -> transacoes.add(new TransacaoDto(transacao)));
+				transacao -> transacoes.add(new TransacaoDto(transacao, locale)));
 				
 		response.setData(transacoes);
 		return ResponseEntity.ok(response);

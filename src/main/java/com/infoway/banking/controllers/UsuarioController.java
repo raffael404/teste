@@ -1,10 +1,13 @@
 package com.infoway.banking.controllers;
 
+import java.util.Locale;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -34,24 +37,30 @@ public class UsuarioController {
 	@Autowired
 	private BancoService bancoService;
 	
+	@Autowired
+    private MessageSource ms;
+	
 	/**
 	 * 
 	 * Cadastra um novo cliente no sistema.
 	 * 
+	 * @param locale
 	 * @param clienteDto
 	 * @param result
 	 * @return ResponseEntity<Response<ClienteDto>>
 	 */
 	@PostMapping(value = "/cadastrar/cliente")
-	public ResponseEntity<Response<ClienteDto>> cadastrarCliente(@Valid @RequestBody ClienteDto clienteDto, BindingResult result) {
+	public ResponseEntity<Response<ClienteDto>> cadastrarCliente(Locale locale,
+			@Valid @RequestBody ClienteDto clienteDto, BindingResult result) {
 		log.info("Cadastrando cliente: {}", clienteDto.toString());
 		
 		if (clienteService.buscar(clienteDto.getCpf()).isPresent())
-			result.addError(new ObjectError("cliente", "CPF já existente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.client", null, locale),
+					ms.getMessage("error.existing.cpf", null, locale)));
 		
 		Response<ClienteDto> response = new Response<ClienteDto>();
 		if (result.hasErrors()) {
-			log.error("Erro validando dados de cadastro do cliente: {}", result.getAllErrors());
+			log.error("Erro validando dados do cliente: {}", result.getAllErrors());
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return ResponseEntity.badRequest().body(response);
 		}
@@ -62,6 +71,7 @@ public class UsuarioController {
 		cliente.setSenha(SenhaUtils.criptografar(clienteDto.getSenha()));
 		clienteService.persistir(cliente);
 		
+		clienteDto.setSenha(cliente.getSenha());
 		response.setData(clienteDto);
 		return ResponseEntity.ok(response);
 	}
@@ -70,20 +80,23 @@ public class UsuarioController {
 	 * 
 	 * Cadastra um novo banco no sistema.
 	 * 
+	 * @param locale
 	 * @param bancoDto
 	 * @param result
 	 * @return ResponseEntity<Response<BancoDto>>
 	 */
 	@PostMapping(value = "/cadastrar/banco")
-	public ResponseEntity<Response<BancoDto>> cadastrarBanco( @Valid @RequestBody BancoDto bancoDto, BindingResult result) {
+	public ResponseEntity<Response<BancoDto>> cadastrarBanco(Locale locale,
+			@Valid @RequestBody BancoDto bancoDto, BindingResult result) {
 		log.info("Cadastrando banco: {}", bancoDto.toString());
 		
 		if (bancoService.buscar(bancoDto.getCodigo()).isPresent())
-			result.addError(new ObjectError("banco", "Código já existente."));
+			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
+					ms.getMessage("error.existing.code", null, locale)));
 		
 		Response<BancoDto> response = new Response<BancoDto>();
 		if (result.hasErrors()) {
-			log.error("Erro validando dados de cadastro do banco: {}", result.getAllErrors());
+			log.error("Erro validando dados do banco: {}", result.getAllErrors());
 			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
 			return ResponseEntity.badRequest().body(response);
 		}

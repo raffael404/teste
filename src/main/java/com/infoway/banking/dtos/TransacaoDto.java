@@ -1,5 +1,7 @@
 package com.infoway.banking.dtos;
 
+import java.util.Locale;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -20,9 +22,9 @@ public class TransacaoDto extends DadoProtegido {
 	
 	public TransacaoDto() {}
 	
-	public TransacaoDto(Transacao transacao) {
+	public TransacaoDto(Transacao transacao, Locale locale) {
 		this.id = transacao.getId();
-		this.data = DataUtils.converterParaString(transacao.getData());
+		this.data = DataUtils.converterParaString(transacao.getData(), locale);
 		this.tipo = transacao.getTipo();
 		this.valor = transacao.getValor();
 		if (transacao.getOrigem() == null) {
