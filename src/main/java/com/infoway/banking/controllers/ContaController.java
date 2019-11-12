@@ -75,28 +75,25 @@ public class ContaController {
 		if (contaDto.getCpfCliente() != null && contaDto.getSenha() != null) {
 			cliente = clienteService.buscar(contaDto.getCpfCliente());
 			if(!cliente.isPresent())
-				result.addError(new ObjectError(ms.getMessage("error.label.client", null, locale),
-						ms.getMessage("error.nonexistent.client", null, locale)));
+				result.addError(new ObjectError("cliente", "error.nonexistent.client"));
 			else if (!SenhaUtils.verificarValidade(contaDto.getSenha(), cliente.get().getSenha()))
-				result.addError(new ObjectError(ms.getMessage("error.label.client", null, locale),
-						ms.getMessage("error.invalid.password", null, locale)));
+				result.addError(new ObjectError("cliente", "error.invalid.password"));
 		}
 		
 		Optional<Banco> banco = null;
 		if (contaDto.getCodigoBanco() != null && contaDto.getNumero() != null) {
 			banco = bancoService.buscar(contaDto.getCodigoBanco());
 			if (!banco.isPresent())
-				result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-						ms.getMessage("error.nonexistent.bank", null, locale)));
+				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
 			else if (contaService.buscar(banco.get(), contaDto.getNumero()).isPresent())
-				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-						ms.getMessage("error.existing.account", null, locale)));
+				result.addError(new ObjectError("conta", "error.existing.account"));
 		}
 		
 		Response<ContaDto> response = new Response<ContaDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados da conta: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
 			return ResponseEntity.badRequest().body(response);
 		}
 		
@@ -131,23 +128,21 @@ public class ContaController {
 		if (contaDto.getCodigoBanco() != null && contaDto.getSenha() != null && contaDto.getNumero() != null) {
 			banco = bancoService.buscar(contaDto.getCodigoBanco());
 			if (!banco.isPresent())
-				result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-						ms.getMessage("error.nonexistent.bank", null, locale)));
+				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
 			else {
 				if (!SenhaUtils.verificarValidade(contaDto.getSenha(), 
 						clienteService.buscar(contaDto.getCpfCliente()).get().getSenha()))
-					result.addError(new ObjectError(ms.getMessage("error.label.client", null, locale),
-							ms.getMessage("error.invalid.password", null, locale)));
+					result.addError(new ObjectError("cliente", "error.invalid.password"));
 				else if (!contaService.buscar(banco.get(), contaDto.getNumero()).isPresent())
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.nonexistent.account", null, locale)));
+					result.addError(new ObjectError("conta", "error.nonexistent.account"));
 			}			
 		}
 		
 		Response<ContaDto> response = new Response<ContaDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados da conta: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
 			return ResponseEntity.badRequest().body(response);
 		}
 		
@@ -176,23 +171,21 @@ public class ContaController {
 		if (transacaoDto.getBancoDestino() != null && transacaoDto.getContaDestino() != null && transacaoDto.getValor() != null) {
 			banco = bancoService.buscar(transacaoDto.getBancoDestino());
 			if (!banco.isPresent())
-				result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-						ms.getMessage("error.nonexistent.bank", null, locale)));
+				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
 			else {
 				conta = contaService.buscar(banco.get(), transacaoDto.getContaDestino());
 				if (!conta.isPresent())
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.nonexistent.account", null, locale)));
+					result.addError(new ObjectError("conta", "error.nonexistent.account"));
 				if (!conta.get().creditar(transacaoDto.getValor()))
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.invalid.value", null, locale)));
+					result.addError(new ObjectError("conta", "error.invalid.value"));
 			}
 		}
 		
 		Response<TransacaoDto> response = new Response<TransacaoDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados da conta: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
 			return ResponseEntity.badRequest().body(response);
 		}
 		
@@ -231,21 +224,17 @@ public class ContaController {
 				&& transacaoDto.getSenha() != null && transacaoDto.getValor() != null) {
 			banco = bancoService.buscar(transacaoDto.getBancoOrigem());
 			if (!banco.isPresent())
-				result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-						ms.getMessage("error.nonexistent.bank", null, locale)));
+				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
 			else {
 				conta = contaService.buscar(banco.get(), transacaoDto.getContaOrigem());
 				if (!conta.isPresent())
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.nonexistent.account", null, locale)));
+					result.addError(new ObjectError("conta", "error.nonexistent.account"));
 				else {
 					if (!SenhaUtils.verificarValidade(transacaoDto.getSenha(), 
 							conta.get().getCliente().getSenha()))
-						result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-								ms.getMessage("error.invalid.password", null, locale)));
+						result.addError(new ObjectError("conta", "error.invalid.password"));
 					else if (!conta.get().debitar(transacaoDto.getValor()))
-						result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-								ms.getMessage("error.invalid.balance", null, locale)));
+						result.addError(new ObjectError("conta", "error.invalid.balance"));
 				}
 			}
 		}
@@ -253,7 +242,8 @@ public class ContaController {
 		Response<TransacaoDto> response = new Response<TransacaoDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados da conta: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
 			return ResponseEntity.badRequest().body(response);
 		}
 		
@@ -293,20 +283,16 @@ public class ContaController {
 				&& transacaoDto.getSenha() != null && transacaoDto.getValor() != null) {
 			bancoOrigem = bancoService.buscar(transacaoDto.getBancoOrigem());
 			if (!bancoOrigem.isPresent())
-				result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-						ms.getMessage("error.nonexistent.bank.origin", null, locale)));
+				result.addError(new ObjectError("banco", "error.nonexistent.bank.origin"));
 			else {
 				contaOrigem = contaService.buscar(bancoOrigem.get(), transacaoDto.getContaOrigem());
 				if (!contaOrigem.isPresent())
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.nonexistent.account.origin", null, locale)));
+					result.addError(new ObjectError("conta", "error.nonexistent.account.origin"));
 				else if (!SenhaUtils.verificarValidade(transacaoDto.getSenha(),
 						contaOrigem.get().getCliente().getSenha()))
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.invalid.password", null, locale)));
+					result.addError(new ObjectError("conta", "error.invalid.password"));
 				else if (!contaOrigem.get().debitar(transacaoDto.getValor()))
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.invalid.balance", null, locale)));
+					result.addError(new ObjectError("conta", "error.invalid.balance"));
 			}
 		}
 		
@@ -316,29 +302,26 @@ public class ContaController {
 				&& transacaoDto.getValor() != null) {
 			bancoDestino = bancoService.buscar(transacaoDto.getBancoDestino());
 			if (!bancoDestino.isPresent())
-				result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-						ms.getMessage("error.nonexistent.bank.destination", null, locale)));
+				result.addError(new ObjectError("banco", "error.nonexistent.bank.destination"));
 			else {
 				contaDestino = contaService.buscar(bancoDestino.get(), transacaoDto.getContaDestino());
 				if (!contaDestino.isPresent())
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.nonexistent.account.destination", null, locale)));
+					result.addError(new ObjectError("conta", "error.nonexistent.account.destination"));
 				if (!contaDestino.get().creditar(transacaoDto.getValor()))
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.invalid.value", null, locale)));
+					result.addError(new ObjectError("transacao", "error.invalid.value"));
 			}
 			
 			if (transacaoDto.getBancoOrigem() == transacaoDto.getBancoDestino()
 					&& transacaoDto.getContaOrigem() == transacaoDto.getContaDestino())
-				result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-						ms.getMessage("error.equal.account", null, locale)));
+				result.addError(new ObjectError("conta", "error.equal.account"));
 		}
 		
 		
 		Response<TransacaoDto> response = new Response<TransacaoDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados das contas: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
 			return ResponseEntity.badRequest().body(response);
 		}
 		
@@ -379,23 +362,21 @@ public class ContaController {
 				&& contaDto.getSenha() != null) {
 			banco = bancoService.buscar(contaDto.getCodigoBanco());
 			if (!banco.isPresent())
-				result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-						ms.getMessage("error.nonexistent.bank", null, locale)));
+				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
 			else {
 				conta = contaService.buscar(banco.get(), contaDto.getNumero());
 				if (!conta.isPresent())
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.nonexistent.account", null, locale)));
+					result.addError(new ObjectError("conta", "error.nonexistent.account"));
 				else if (!SenhaUtils.verificarValidade(contaDto.getSenha(), conta.get().getCliente().getSenha()))
-					result.addError(new ObjectError(ms.getMessage("error.label.account", null, locale),
-							ms.getMessage("error.invalid.password", null, locale)));
+					result.addError(new ObjectError("conta", "error.invalid.password"));
 			}
 		}
 		
 		Response<List<TransacaoDto>> response = new Response<List<TransacaoDto>>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados da conta: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
 			return ResponseEntity.badRequest().body(response);
 		}
 		

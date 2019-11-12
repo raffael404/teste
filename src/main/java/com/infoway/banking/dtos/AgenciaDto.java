@@ -22,9 +22,9 @@ public class AgenciaDto extends DadoProtegido {
 		this.codigoBanco = agencia.getBanco().getCodigo();
 	}
 
-	@NotEmpty(message = "CNPJ não pode ser vazio.")
-	@Length(min = 14, max = 14, message = "CNPJ deve conter 14 caracteres.")
-	@CNPJ(message = "CNPJ inválido.")
+	@NotEmpty(message = "error.empty.cnpj")
+	@Length(min = 14, max = 14, message = "error.size.cnpj")
+	@CNPJ(message = "error.invalid.cnpj")
 	public String getCnpj() {
 		return cnpj;
 	}
@@ -32,9 +32,9 @@ public class AgenciaDto extends DadoProtegido {
 		this.cnpj = cnpj;
 	}
 	
-	@NotEmpty(message = "Número não pode ser vazio.")
-	@Length(min = 1, max = 5, message = "Número deve conter entre 1 e 5 caracteres.")
-	@Pattern(regexp = "[\\d]*", message = "Número deve conter apenas números.")
+	@NotEmpty(message = "error.empty.number")
+	@Length(min = 1, max = 5, message = "error.size.branch.number")
+	@Pattern(regexp = "[\\d]*", message = "error.invalid.number")
 	public String getNumero() {
 		return numero;
 	}
@@ -42,7 +42,7 @@ public class AgenciaDto extends DadoProtegido {
 		this.numero = numero;
 	}
 	
-	@NotEmpty(message = "Código do banco não pode ser vazio.")
+	@NotEmpty(message = "error.empty.bank.code")
 	public String getCodigoBanco() {
 		return codigoBanco;
 	}

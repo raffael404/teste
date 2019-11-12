@@ -6,7 +6,7 @@ public abstract class DadoProtegido {
 	
 	private String senha;
 
-	@NotEmpty(message = "Senha não pode ser vazia.")
+	@NotEmpty(message = "error.empty.password")
 	public String getSenha() {
 		return senha;
 	}

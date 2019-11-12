@@ -64,7 +64,7 @@ public class TransacaoDto extends DadoProtegido {
 		this.tipo = tipo;
 	}
 
-	@NotNull(message = "Valor não pode ser vazio.")
+	@NotNull(message = "error.empty.value")
 	public Double getValor() {
 		return valor;
 	}
@@ -72,7 +72,7 @@ public class TransacaoDto extends DadoProtegido {
 		this.valor = valor;
 	}
 	
-	@NotEmpty(message = "Código do banco de origem não pode ser vazio.")
+	@NotEmpty(message = "error.empty.bank.origin.code")
 	public String getBancoOrigem() {
 		return bancoOrigem;
 	}
@@ -80,7 +80,7 @@ public class TransacaoDto extends DadoProtegido {
 		this.bancoOrigem = bancoOrigem;
 	}
 	
-	@NotEmpty(message = "Número da conta de origem não pode ser vazio.")
+	@NotEmpty(message = "error.empty.account.origin.number")
 	public String getContaOrigem() {
 		return contaOrigem;
 	}
@@ -88,7 +88,7 @@ public class TransacaoDto extends DadoProtegido {
 		this.contaOrigem = contaOrigem;
 	}
 	
-	@NotEmpty(message = "Código do banco de destino não pode ser vazio.")
+	@NotEmpty(message = "error.empty.bank.destination.code")
 	public String getBancoDestino() {
 		return bancoDestino;
 	}
@@ -96,7 +96,7 @@ public class TransacaoDto extends DadoProtegido {
 		this.bancoDestino = bancoDestino;
 	}
 	
-	@NotEmpty(message = "Número da conta de destino não pode ser vazio.")
+	@NotEmpty(message = "error.empty.account.destination.number")
 	public String getContaDestino() {
 		return contaDestino;
 	}

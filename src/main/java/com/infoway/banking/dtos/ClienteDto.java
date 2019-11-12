@@ -19,8 +19,8 @@ public class ClienteDto extends UsuarioDto {
 		this.nome = cliente.getNome();
 	}
 	
-	@NotEmpty(message = "CPF não pode ser vazio.")
-	@CPF(message = "CPF inválido.")
+	@NotEmpty(message = "error.empty.cpf")
+	@CPF(message = "error.invalid.cpf")
 	public String getCpf() {
 		return cpf;
 	}
@@ -28,8 +28,8 @@ public class ClienteDto extends UsuarioDto {
 		this.cpf = cpf;
 	}
 	
-	@NotEmpty(message = "Nome não pode ser vazio")
-	@Length(min = 5, max = 255, message = "Nome deve conter entre 5 e 255 caracteres.")
+	@NotEmpty(message = "error.empty.name")
+	@Length(min = 5, max = 255, message = "error.size.client.name")
 	public String getNome() {
 		return nome;
 	}

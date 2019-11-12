@@ -55,13 +55,13 @@ public class UsuarioController {
 		log.info("Cadastrando cliente: {}", clienteDto.toString());
 		
 		if (clienteDto.getCpf() != null && clienteService.buscar(clienteDto.getCpf()).isPresent())
-			result.addError(new ObjectError(ms.getMessage("error.label.client", null, locale),
-					ms.getMessage("error.existing.cpf", null, locale)));
+			result.addError(new ObjectError("cliente", "error.existing.cpf"));
 		
 		Response<ClienteDto> response = new Response<ClienteDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados do cliente: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
 			return ResponseEntity.badRequest().body(response);
 		}
 		
@@ -91,13 +91,13 @@ public class UsuarioController {
 		log.info("Cadastrando banco: {}", bancoDto.toString());
 		
 		if (bancoDto.getCodigo() != null && bancoService.buscar(bancoDto.getCodigo()).isPresent())
-			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-					ms.getMessage("error.existing.code", null, locale)));
+			result.addError(new ObjectError("banco", "error.existing.code"));
 		
 		Response<BancoDto> response = new Response<BancoDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados do banco: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
 			return ResponseEntity.badRequest().body(response);
 		}
 		

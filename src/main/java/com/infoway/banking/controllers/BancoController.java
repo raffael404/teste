@@ -54,23 +54,19 @@ public class BancoController {
 		
 		Optional<Banco> banco = bancoService.buscar(agenciaDto.getCodigoBanco());
 		if (!banco.isPresent())
-			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-					ms.getMessage("error.nonexistent.bank", null, locale)));
+			result.addError(new ObjectError("banco", "error.nonexistent.bank"));
 		else {
 			if (!SenhaUtils.verificarValidade(agenciaDto.getSenha(), banco.get().getSenha()))
-				result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
-						ms.getMessage("error.invalid.password", null, locale)));
+				result.addError(new ObjectError("banco", "error.invalid.password"));
 			for (Agencia agencia : banco.get().getAgencias()) {
 				if (agencia.getNumero() == agenciaDto.getNumero()) {
-					result.addError(new ObjectError(ms.getMessage("error.label.branch", null, locale),
-							ms.getMessage("error.existing.number", null, locale)));
+					result.addError(new ObjectError("agencia", "error.existing.number"));
 					break;
 				}
 			}
 			for (Agencia agencia : banco.get().getAgencias()) {
 				if (agencia.getCnpj() == agenciaDto.getCnpj()) {
-					result.addError(new ObjectError(ms.getMessage("error.label.branch", null, locale),
-							ms.getMessage("error.existing.cnpj", null, locale)));
+					result.addError(new ObjectError("agencia", "error.existing.cnpj"));
 					break;
 				}
 			}
@@ -79,7 +75,8 @@ public class BancoController {
 		Response<AgenciaDto> response = new Response<AgenciaDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados da agencia: {}", result.getAllErrors());
-			result.getAllErrors().forEach(error -> response.getErrors().add(error.getDefaultMessage()));
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
 			return ResponseEntity.badRequest().body(response);
 		}
 		

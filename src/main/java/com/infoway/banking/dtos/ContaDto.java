@@ -34,9 +34,9 @@ public class ContaDto extends DadoProtegido {
 		this.id = id;
 	}
 
-	@NotEmpty(message = "Número não pode ser vazio.")
-	@Length(min = 1, max = 8, message = "Número deve conter entre 1 e 8 caracteres.")
-	@Pattern(regexp = "[\\d]*", message = "Número deve conter apenas números.")
+	@NotEmpty(message = "error.empty.number")
+	@Length(min = 1, max = 8, message = "error.size.account.number")
+	@Pattern(regexp = "[\\d]*", message = "error.invalid.number")
 	public String getNumero() {
 		return numero;
 	}
@@ -51,7 +51,7 @@ public class ContaDto extends DadoProtegido {
 		this.saldo = saldo;
 	}
 	
-	@NotEmpty(message = "Código do banco não pode ser vazio.")
+	@NotEmpty(message = "error.empty.bank.code")
 	public String getCodigoBanco() {
 		return codigoBanco;
 	}
@@ -59,7 +59,7 @@ public class ContaDto extends DadoProtegido {
 		this.codigoBanco = codigoBanco;
 	}
 	
-	@NotEmpty(message = "CPF do cliente não pode ser vazio.")
+	@NotEmpty(message = "error.empty.client.cpf")
 	public String getCpfCliente() {
 		return cpfCliente;
 	}
