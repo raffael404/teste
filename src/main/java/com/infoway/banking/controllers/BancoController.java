@@ -25,7 +25,7 @@ import com.infoway.banking.services.BancoService;
 import com.infoway.banking.utils.SenhaUtils;
 
 @RestController
-@RequestMapping("/banking/banco")
+@RequestMapping("/banco")
 public class BancoController {
 	
 	private static final Logger log = LoggerFactory.getLogger(BancoController.class);

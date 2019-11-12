@@ -26,7 +26,7 @@ import com.infoway.banking.services.ClienteService;
 import com.infoway.banking.utils.SenhaUtils;
 
 @RestController
-@RequestMapping("/banking/usuario")
+@RequestMapping("/usuario")
 public class UsuarioController {
 
 	private static final Logger log = LoggerFactory.getLogger(UsuarioController.class);
@@ -54,7 +54,7 @@ public class UsuarioController {
 			@Valid @RequestBody ClienteDto clienteDto, BindingResult result) {
 		log.info("Cadastrando cliente: {}", clienteDto.toString());
 		
-		if (clienteService.buscar(clienteDto.getCpf()).isPresent())
+		if (clienteDto.getCpf() != null && clienteService.buscar(clienteDto.getCpf()).isPresent())
 			result.addError(new ObjectError(ms.getMessage("error.label.client", null, locale),
 					ms.getMessage("error.existing.cpf", null, locale)));
 		
@@ -90,7 +90,7 @@ public class UsuarioController {
 			@Valid @RequestBody BancoDto bancoDto, BindingResult result) {
 		log.info("Cadastrando banco: {}", bancoDto.toString());
 		
-		if (bancoService.buscar(bancoDto.getCodigo()).isPresent())
+		if (bancoDto.getCodigo() != null && bancoService.buscar(bancoDto.getCodigo()).isPresent())
 			result.addError(new ObjectError(ms.getMessage("error.label.bank", null, locale),
 					ms.getMessage("error.existing.code", null, locale)));
 		
