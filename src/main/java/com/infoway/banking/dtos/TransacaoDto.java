@@ -6,14 +6,12 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.infoway.banking.entities.Transacao;
-import com.infoway.banking.enums.TipoTransacao;
 import com.infoway.banking.utils.DataUtils;
 
 public class TransacaoDto extends DadoProtegido {
 	
 	private Long id;
 	private String data;
-	private TipoTransacao tipo;
 	private Double valor;
 	private String bancoOrigem;
 	private String contaOrigem;
@@ -25,22 +23,11 @@ public class TransacaoDto extends DadoProtegido {
 	public TransacaoDto(Transacao transacao, Locale locale) {
 		this.id = transacao.getId();
 		this.data = DataUtils.converterParaString(transacao.getData(), locale);
-		this.tipo = transacao.getTipo();
 		this.valor = transacao.getValor();
-		if (transacao.getOrigem() == null) {
-			this.bancoOrigem = "";
-			this.contaOrigem = "";
-		} else {
-			this.bancoOrigem = transacao.getOrigem().getBanco().getCodigo();
-			this.contaOrigem = transacao.getOrigem().getNumero();
-		}
-		if (transacao.getDestino() == null) {
-			this.bancoDestino = "";
-			this.contaDestino = "";
-		} else {
-			this.bancoDestino = transacao.getDestino().getBanco().getCodigo();
-			this.contaDestino = transacao.getDestino().getNumero();
-		}
+		this.bancoOrigem = transacao.getOrigem().getBanco().getCodigo();
+		this.contaOrigem = transacao.getOrigem().getNumero();
+		this.bancoDestino = transacao.getDestino().getBanco().getCodigo();
+		this.contaDestino = transacao.getDestino().getNumero();
 	}
 	
 	public Long getId() {
@@ -55,13 +42,6 @@ public class TransacaoDto extends DadoProtegido {
 	}
 	public void setData(String data) {
 		this.data = data;
-	}
-
-	public TipoTransacao getTipo() {
-		return tipo;
-	}
-	public void setTipo(TipoTransacao tipo) {
-		this.tipo = tipo;
 	}
 
 	@NotNull(message = "error.empty.value")

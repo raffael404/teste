@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.infoway.banking.dtos.ContaDto;
 import com.infoway.banking.dtos.TransacaoDto;
+import com.infoway.banking.dtos.TransacaoSimplesDto;
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.entities.Cliente;
 import com.infoway.banking.entities.Conta;
@@ -160,22 +161,23 @@ public class ContaController {
 	 * @param locale
 	 * @param transacaoDto
 	 * @param result
-	 * @return ResponseEntity<Response<TransacaoDto>>
+	 * @return ResponseEntity<Response<TransacaoSimplesDto>>
 	 */
 	@PostMapping(value = "/depositar")
-	public ResponseEntity<Response<TransacaoDto>> depositar(Locale locale,
-			@Valid @RequestBody TransacaoDto transacaoDto, BindingResult result) {
+	public ResponseEntity<Response<TransacaoSimplesDto>> depositar(Locale locale,
+			@Valid @RequestBody TransacaoSimplesDto transacaoDto, BindingResult result) {
 		log.info("Depositando R$ {} na conta {} no banco {}", transacaoDto.getValor(),
-				transacaoDto.getContaDestino(), transacaoDto.getBancoDestino());
+				transacaoDto.getNumeroConta(), transacaoDto.getCodigoBanco());
 		
 		Optional<Banco> banco = null;
 		Optional<Conta> conta = null;
-		if (transacaoDto.getBancoDestino() != null && transacaoDto.getContaDestino() != null && transacaoDto.getValor() != null) {
-			banco = bancoService.buscar(transacaoDto.getBancoDestino());
+		if (transacaoDto.getCodigoBanco() != null && transacaoDto.getNumeroConta() != null
+				&& transacaoDto.getValor() != null) {
+			banco = bancoService.buscar(transacaoDto.getCodigoBanco());
 			if (!banco.isPresent())
 				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
 			else {
-				conta = contaService.buscar(banco.get(), transacaoDto.getContaDestino());
+				conta = contaService.buscar(banco.get(), transacaoDto.getNumeroConta());
 				if (!conta.isPresent())
 					result.addError(new ObjectError("conta", "error.nonexistent.account"));
 				try {
@@ -186,7 +188,7 @@ public class ContaController {
 			}
 		}
 		
-		Response<TransacaoDto> response = new Response<TransacaoDto>();
+		Response<TransacaoSimplesDto> response = new Response<TransacaoSimplesDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados da conta: {}", result.getAllErrors());
 			result.getAllErrors().forEach(
@@ -203,7 +205,6 @@ public class ContaController {
 		
 		transacaoDto.setId(transacao.getId());
 		transacaoDto.setData(DataUtils.converterParaString(transacao.getData(), locale));
-		transacaoDto.setTipo(transacao.getTipo());
 		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
 	}
@@ -215,23 +216,23 @@ public class ContaController {
 	 * @param locale
 	 * @param transacaoDto
 	 * @param result
-	 * @return ResponseEntity<Response<TransacaoDto>>
+	 * @return ResponseEntity<Response<TransacaoSimplesDto>>
 	 */
 	@PostMapping(value = "/sacar")
-	public ResponseEntity<Response<TransacaoDto>> sacar(Locale locale,
-			@Valid @RequestBody TransacaoDto transacaoDto, BindingResult result) {
+	public ResponseEntity<Response<TransacaoSimplesDto>> sacar(Locale locale,
+			@Valid @RequestBody TransacaoSimplesDto transacaoDto, BindingResult result) {
 		log.info("Sacando R$ {} na conta {} no banco {}", transacaoDto.getValor(),
-				transacaoDto.getContaOrigem(), transacaoDto.getBancoOrigem());
+				transacaoDto.getNumeroConta(), transacaoDto.getCodigoBanco());
 		
 		Optional<Banco> banco = null;
 		Optional<Conta> conta = null;
-		if (transacaoDto.getBancoOrigem() != null && transacaoDto.getContaOrigem() != null
+		if (transacaoDto.getCodigoBanco() != null && transacaoDto.getNumeroConta() != null
 				&& transacaoDto.getSenha() != null && transacaoDto.getValor() != null) {
-			banco = bancoService.buscar(transacaoDto.getBancoOrigem());
+			banco = bancoService.buscar(transacaoDto.getCodigoBanco());
 			if (!banco.isPresent())
 				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
 			else {
-				conta = contaService.buscar(banco.get(), transacaoDto.getContaOrigem());
+				conta = contaService.buscar(banco.get(), transacaoDto.getNumeroConta());
 				if (!conta.isPresent())
 					result.addError(new ObjectError("conta", "error.nonexistent.account"));
 				else {
@@ -247,7 +248,7 @@ public class ContaController {
 			}
 		}
 		
-		Response<TransacaoDto> response = new Response<TransacaoDto>();
+		Response<TransacaoSimplesDto> response = new Response<TransacaoSimplesDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados da conta: {}", result.getAllErrors());
 			result.getAllErrors().forEach(
@@ -264,7 +265,6 @@ public class ContaController {
 		
 		transacaoDto.setId(transacao.getId());
 		transacaoDto.setData(DataUtils.converterParaString(transacao.getData(), locale));
-		transacaoDto.setTipo(transacao.getTipo());
 		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
 	}
@@ -351,7 +351,6 @@ public class ContaController {
 		
 		transacaoDto.setId(transacao.getId());
 		transacaoDto.setData(DataUtils.converterParaString(transacao.getData(), locale));
-		transacaoDto.setTipo(transacao.getTipo());
 		response.setData(transacaoDto);
 		return ResponseEntity.ok(response);
 	}
