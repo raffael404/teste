@@ -18,6 +18,8 @@ public class Agencia implements Serializable {
 	private String cnpj;
 	private String numero;
 	private Banco banco;
+
+	public Agencia() {}
 	
 	@Id
 	@Column(name = "cnpj", nullable = false, length = 14)

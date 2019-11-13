@@ -52,25 +52,30 @@ public class BancoController {
 			@Valid @RequestBody AgenciaDto agenciaDto, BindingResult result) {
 		log.info("Cadastrando agencia: {}", agenciaDto.toString());
 		
-		Optional<Banco> banco = bancoService.buscar(agenciaDto.getCodigoBanco());
-		if (!banco.isPresent())
-			result.addError(new ObjectError("banco", "error.nonexistent.bank"));
-		else {
-			if (!SenhaUtils.verificarValidade(agenciaDto.getSenha(), banco.get().getSenha()))
-				result.addError(new ObjectError("banco", "error.invalid.password"));
-			for (Agencia agencia : banco.get().getAgencias()) {
-				if (agencia.getNumero() == agenciaDto.getNumero()) {
-					result.addError(new ObjectError("agencia", "error.existing.number"));
-					break;
+		Optional<Banco> banco = null;
+		if (agenciaDto.getCodigoBanco() != null && agenciaDto.getNumero() != null
+				&& agenciaDto.getCnpj() != null && agenciaDto.getSenha() != null) {
+			banco = bancoService.buscar(agenciaDto.getCodigoBanco());
+			if (!banco.isPresent())
+				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
+			else {
+				if (!SenhaUtils.verificarValidade(agenciaDto.getSenha(), banco.get().getSenha()))
+					result.addError(new ObjectError("banco", "error.invalid.password"));
+				for (Agencia agencia : banco.get().getAgencias()) {
+					if (agencia.getNumero() == agenciaDto.getNumero()) {
+						result.addError(new ObjectError("agencia", "error.existing.number"));
+						break;
+					}
 				}
-			}
-			for (Agencia agencia : banco.get().getAgencias()) {
-				if (agencia.getCnpj() == agenciaDto.getCnpj()) {
-					result.addError(new ObjectError("agencia", "error.existing.cnpj"));
-					break;
+				for (Agencia agencia : banco.get().getAgencias()) {
+					if (agencia.getCnpj() == agenciaDto.getCnpj()) {
+						result.addError(new ObjectError("agencia", "error.existing.cnpj"));
+						break;
+					}
 				}
 			}
 		}
+		
 		
 		Response<AgenciaDto> response = new Response<AgenciaDto>();
 		if (result.hasErrors()) {
@@ -91,5 +96,58 @@ public class BancoController {
 		response.setData(agenciaDto);
 		return ResponseEntity.ok(response);
 	}
+	
+	/**
+	 * 
+	 * Remove uma agencia do sistema.
+	 * 
+	 * @param locale
+	 * @param agenciaDto
+	 * @param result
+	 * @return ResponseEntity<Response<AgenciaDto>>
+	 */
+	@PostMapping(value = "/remover/agencia")
+	public ResponseEntity<Response<AgenciaDto>> removerAgencia(Locale locale,
+			@Valid @RequestBody AgenciaDto agenciaDto, BindingResult result) {
+		log.info("Removendo agencia: {}", agenciaDto.toString());
+		
+		Optional<Banco> banco = null;
+		Agencia agencia = null;
+		if (agenciaDto.getCodigoBanco() != null && agenciaDto.getNumero() != null
+				&& agenciaDto.getSenha() != null) {
+			banco = bancoService.buscar(agenciaDto.getCodigoBanco());
+			if (!banco.isPresent())
+				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
+			else {
+				if (!SenhaUtils.verificarValidade(agenciaDto.getSenha(), banco.get().getSenha()))
+					result.addError(new ObjectError("banco", "error.invalid.password"));
+				boolean agenciaEncontrada = false;
+				for (Agencia ag : banco.get().getAgencias()) {
+					if (ag.getNumero() == agenciaDto.getNumero()) {
+						agenciaEncontrada = true;
+						agencia = ag;
+						break;
+					}
+				}
+				if (!agenciaEncontrada)
+					result.addError(new ObjectError("agencia", "error.nonexistent.branch"));
+			}
+		}
+		
+		Response<AgenciaDto> response = new Response<AgenciaDto>();
+		if (result.hasErrors()) {
+			log.error("Erro validando dados da agencia: {}", result.getAllErrors());
+			result.getAllErrors().forEach(
+					error -> response.getErrors().add(ms.getMessage(error.getDefaultMessage(), null, locale)));
+			return ResponseEntity.badRequest().body(response);
+		}
+		
+		banco.get().getAgencias().remove(agencia);
+		bancoService.persistir(banco.get());
+		
+		response.setData(agenciaDto);
+		return ResponseEntity.ok(response);
+	}
+	
 	
 }
