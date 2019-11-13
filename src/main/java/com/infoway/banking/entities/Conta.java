@@ -11,6 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.infoway.banking.exception.SaldoInsuficienteException;
+import com.infoway.banking.exception.ValorInvalidoException;
+
 @Entity
 @Table(name = "conta")
 public class Conta implements Serializable {
@@ -20,24 +23,27 @@ public class Conta implements Serializable {
 	private Long id;
 	private String numero;
 	private String senha;
-	private double saldo;
+	private Double saldo;
 	private Banco banco;
 	private Cliente cliente;
 	
-	public Conta() {}
-	
-	public boolean debitar(double valor) {
-		if (valor <= 0 || valor > this.saldo)
-			return false;
-		this.saldo -= valor;
-		return true;
+	public Conta() {
+		this.saldo = 0.0;
 	}
 	
-	public boolean creditar(double valor) {
+	public void debitar(double valor) throws ValorInvalidoException, SaldoInsuficienteException {
 		if (valor <= 0)
-			return false;
-		this.saldo += valor;
-		return true;
+			throw new ValorInvalidoException();
+		else if (valor > this.saldo)
+			throw new SaldoInsuficienteException();
+		else this.saldo -= valor;
+	}
+	
+	public void creditar(double valor) throws ValorInvalidoException {
+		if (valor <= 0)
+			throw new ValorInvalidoException();
+		else
+			this.saldo += valor;
 	}
 	
 	@Id
@@ -66,10 +72,10 @@ public class Conta implements Serializable {
 	}
 	
 	@Column(name = "saldo", nullable = false)
-	public double getSaldo() {
+	public Double getSaldo() {
 		return saldo;
 	}
-	public void setSaldo(double saldo) {
+	public void setSaldo(Double saldo) {
 		this.saldo = saldo;
 	}
 	

@@ -26,6 +26,8 @@ import com.infoway.banking.entities.Cliente;
 import com.infoway.banking.entities.Conta;
 import com.infoway.banking.entities.Transacao;
 import com.infoway.banking.enums.TipoTransacao;
+import com.infoway.banking.exception.SaldoInsuficienteException;
+import com.infoway.banking.exception.ValorInvalidoException;
 import com.infoway.banking.responses.Response;
 import com.infoway.banking.services.BancoService;
 import com.infoway.banking.services.ClienteService;
@@ -176,8 +178,11 @@ public class ContaController {
 				conta = contaService.buscar(banco.get(), transacaoDto.getContaDestino());
 				if (!conta.isPresent())
 					result.addError(new ObjectError("conta", "error.nonexistent.account"));
-				if (!conta.get().creditar(transacaoDto.getValor()))
-					result.addError(new ObjectError("conta", "error.invalid.value"));
+				try {
+					conta.get().creditar(transacaoDto.getValor());
+				} catch (ValorInvalidoException e) {
+					result.addError(new ObjectError("conta", e.getMessage()));
+				}				
 			}
 		}
 		
@@ -233,8 +238,11 @@ public class ContaController {
 					if (!SenhaUtils.verificarValidade(transacaoDto.getSenha(), 
 							conta.get().getCliente().getSenha()))
 						result.addError(new ObjectError("conta", "error.invalid.password"));
-					else if (!conta.get().debitar(transacaoDto.getValor()))
-						result.addError(new ObjectError("conta", "error.invalid.balance"));
+					else try {
+						conta.get().debitar(transacaoDto.getValor());
+					} catch (SaldoInsuficienteException | ValorInvalidoException e) {
+						result.addError(new ObjectError("conta", e.getMessage()));
+					}
 				}
 			}
 		}
@@ -291,8 +299,11 @@ public class ContaController {
 				else if (!SenhaUtils.verificarValidade(transacaoDto.getSenha(),
 						contaOrigem.get().getCliente().getSenha()))
 					result.addError(new ObjectError("conta", "error.invalid.password"));
-				else if (!contaOrigem.get().debitar(transacaoDto.getValor()))
-					result.addError(new ObjectError("conta", "error.invalid.balance"));
+				else try {
+					contaOrigem.get().debitar(transacaoDto.getValor());
+				} catch (ValorInvalidoException | SaldoInsuficienteException e) {
+					result.addError(new ObjectError("conta", e.getMessage()));
+				}
 			}
 		}
 		
@@ -307,8 +318,11 @@ public class ContaController {
 				contaDestino = contaService.buscar(bancoDestino.get(), transacaoDto.getContaDestino());
 				if (!contaDestino.isPresent())
 					result.addError(new ObjectError("conta", "error.nonexistent.account.destination"));
-				if (!contaDestino.get().creditar(transacaoDto.getValor()))
-					result.addError(new ObjectError("transacao", "error.invalid.value"));
+				try {
+					contaDestino.get().creditar(transacaoDto.getValor());
+				} catch (ValorInvalidoException e) {
+					result.addError(new ObjectError("transacao", e.getMessage()));
+				}
 			}
 			
 			if (transacaoDto.getBancoOrigem() == transacaoDto.getBancoDestino()
