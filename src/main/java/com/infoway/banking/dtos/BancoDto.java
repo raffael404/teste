@@ -17,6 +17,7 @@ public class BancoDto extends UsuarioDto {
 	public BancoDto(Banco banco) {
 		this.codigo = banco.getCodigo();
 		this.nome = banco.getNome();
+		this.setSenha(banco.getSenha());
 	}
 
 	@NotEmpty(message = "error.empty.code")

@@ -17,6 +17,7 @@ public class ClienteDto extends UsuarioDto {
 	public ClienteDto(Cliente cliente) {
 		this.cpf = cliente.getCpf();
 		this.nome = cliente.getNome();
+		this.setSenha(cliente.getSenha());
 	}
 	
 	@NotEmpty(message = "error.empty.cpf")
