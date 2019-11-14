@@ -6,12 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.infoway.banking.entities.Banco;
+import com.infoway.banking.repositories.BancoRepository;
 import com.infoway.banking.utils.MockupUtils;
 
 @SpringBootTest
@@ -22,6 +24,14 @@ class BancoServiceTest {
 	
 	@Autowired
 	private BancoService bancoService;
+	
+	@Autowired
+	private BancoRepository bancoRepository;
+	
+	@AfterEach
+	public void destruir() {
+		bancoRepository.deleteAll();
+	}
 	
 	@Test
 	void testBuscar() {

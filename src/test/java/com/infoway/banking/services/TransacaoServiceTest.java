@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,10 @@ import org.springframework.test.context.ActiveProfiles;
 import com.infoway.banking.entities.Conta;
 import com.infoway.banking.entities.Transacao;
 import com.infoway.banking.enums.TipoTransacao;
+import com.infoway.banking.repositories.BancoRepository;
+import com.infoway.banking.repositories.ClienteRepository;
+import com.infoway.banking.repositories.ContaRepository;
+import com.infoway.banking.repositories.TransacaoRepository;
 import com.infoway.banking.utils.MockupUtils;
 
 @SpringBootTest
@@ -31,6 +36,26 @@ class TransacaoServiceTest {
 	
 	@Autowired
 	private TransacaoService transacaoService;
+	
+	@Autowired
+	private BancoRepository bancoRepository;
+	
+	@Autowired
+	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private ContaRepository contaRepository;
+	
+	@Autowired
+	private TransacaoRepository transacaoRepository;
+	
+	@AfterEach
+	public void destruir() {
+		transacaoRepository.deleteAll();
+		contaRepository.deleteAll();
+		bancoRepository.deleteAll();
+		clienteRepository.deleteAll();
+	}
 	
 	@Test
 	void testBuscarTodas() {

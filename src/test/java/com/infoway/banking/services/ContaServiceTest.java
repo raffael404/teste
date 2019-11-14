@@ -6,12 +6,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.infoway.banking.entities.Conta;
+import com.infoway.banking.repositories.BancoRepository;
+import com.infoway.banking.repositories.ClienteRepository;
+import com.infoway.banking.repositories.ContaRepository;
 import com.infoway.banking.utils.MockupUtils;
 
 @SpringBootTest
@@ -28,6 +32,22 @@ class ContaServiceTest {
 
 	@Autowired
 	private ContaService contaService;
+	
+	@Autowired
+	private BancoRepository bancoRepository;
+	
+	@Autowired
+	private ClienteRepository clienteRepository;
+	
+	@Autowired
+	private ContaRepository contaRepository;
+	
+	@AfterEach
+	public void destruir() {
+		contaRepository.deleteAll();
+		bancoRepository.deleteAll();
+		clienteRepository.deleteAll();
+	}
 	
 	@Test
 	void testBuscar() {
