@@ -1,12 +1,23 @@
 package com.infoway.banking.utils;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Locale;
+
+import org.springframework.context.MessageSource;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.entities.Cliente;
 import com.infoway.banking.entities.Conta;
 import com.infoway.banking.entities.Transacao;
 import com.infoway.banking.enums.TipoTransacao;
 
-public class MockupUtils {
+public class TesteUtils {
 	
 	public static final int BANCO_001 = 0;
 	public static final int BANCO_260 = 1;
@@ -17,6 +28,8 @@ public class MockupUtils {
 	public static final int TRANSFERENCIA_100 = 30;
 	public static final int DEPOSITO_200 = 31;
 	public static final int SAQUE_50 = 32;
+	
+	private static final ObjectMapper mapper = new ObjectMapper();
 	
 	public static Banco criarBanco(Integer banco) {
 		Banco b = new Banco();
@@ -111,6 +124,16 @@ public class MockupUtils {
 			break;
 		}
 		return t;
+	}
+	
+	public static void fazerRequisicaoInvalida(Object objectDto, String codigoErro, String url, MockMvc mvc, MessageSource ms) throws Exception {
+		mvc.perform(MockMvcRequestBuilders.post(url)
+				.content(mapper.writeValueAsString(objectDto))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.data").isEmpty())
+				.andExpect(jsonPath("$.errors").value(ms.getMessage(codigoErro, null, Locale.US)));
 	}
 	
 }

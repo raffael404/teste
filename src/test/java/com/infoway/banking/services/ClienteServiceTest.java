@@ -14,13 +14,13 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.infoway.banking.entities.Cliente;
 import com.infoway.banking.repositories.ClienteRepository;
-import com.infoway.banking.utils.MockupUtils;
+import com.infoway.banking.utils.TesteUtils;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class ClienteServiceTest {
 
-	private static final String cpf = "70336818017";
+	private static final String CPF = "70336818017";
 	
 	@Autowired
 	private ClienteService clienteService;
@@ -29,28 +29,28 @@ class ClienteServiceTest {
 	private ClienteRepository clienteRepository;
 	
 	@AfterEach
-	public void destruir() {
+	public void limpar() {
 		clienteRepository.deleteAll();
 	}
 	
 	@Test
 	void testBuscar() {
-		this.clienteService.persistir(MockupUtils.criarCliente(MockupUtils.CLIENTE_70336818017));
-		Optional<Cliente> cliente = clienteService.buscar(cpf);
+		this.clienteService.persistir(TesteUtils.criarCliente(TesteUtils.CLIENTE_70336818017));
+		Optional<Cliente> cliente = clienteService.buscar(CPF);
 		assertTrue(cliente.isPresent());
 	}
 	
 	@Test
 	void testPersistir() {
-		Cliente cliente = this.clienteService.persistir(MockupUtils.criarCliente(MockupUtils.CLIENTE_70336818017));
+		Cliente cliente = this.clienteService.persistir(TesteUtils.criarCliente(TesteUtils.CLIENTE_70336818017));
 		assertNotNull(cliente);
 	}
 	
 	@Test
 	void testRemover() {
-		this.clienteService.persistir(MockupUtils.criarCliente(MockupUtils.CLIENTE_70336818017));
-		this.clienteService.remover(cpf);
-		Optional<Cliente> cliente = clienteService.buscar(cpf);
+		this.clienteService.persistir(TesteUtils.criarCliente(TesteUtils.CLIENTE_70336818017));
+		this.clienteService.remover(CPF);
+		Optional<Cliente> cliente = clienteService.buscar(CPF);
 		assertFalse(cliente.isPresent());
 	}
 

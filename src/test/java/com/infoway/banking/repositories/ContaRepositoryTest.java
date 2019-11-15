@@ -14,15 +14,15 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.entities.Conta;
-import com.infoway.banking.utils.MockupUtils;
+import com.infoway.banking.utils.TesteUtils;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
 class ContaRepositoryTest {
 
-	private static final String codigoBanco = "001";
-	private static final String numero = "1234567";
+	private static final String CODIGO_BANCO = "001";
+	private static final String NUMERO = "1234567";
 	
 	@Autowired
 	private BancoRepository bancoRepository;
@@ -34,16 +34,16 @@ class ContaRepositoryTest {
 	private ContaRepository contaRepository;
 	
 	@BeforeAll
-	public void criar() {
-		Conta conta = MockupUtils.criarConta(
-				MockupUtils.CONTA_1234567, MockupUtils.BANCO_001, MockupUtils.CLIENTE_70336818017);
+	public void preparar() {
+		Conta conta = TesteUtils.criarConta(
+				TesteUtils.CONTA_1234567, TesteUtils.BANCO_001, TesteUtils.CLIENTE_70336818017);
 		this.bancoRepository.save(conta.getBanco());
 		this.clienteRepository.save(conta.getCliente());
 		this.contaRepository.save(conta);
 	}
 	
 	@AfterAll
-	public void destruir() {
+	public void limpar() {
 		this.contaRepository.deleteAll();
 		this.bancoRepository.deleteAll();
 		this.clienteRepository.deleteAll();
@@ -51,9 +51,9 @@ class ContaRepositoryTest {
 	
 	@Test
 	void testBuscarPorBancoENumero() {
-		Banco banco = this.bancoRepository.findById(codigoBanco).get();
-		Conta conta = this.contaRepository.findByBancoAndNumero(banco, numero);
-		assertEquals(numero, conta.getNumero());
+		Banco banco = this.bancoRepository.findById(CODIGO_BANCO).get();
+		Conta conta = this.contaRepository.findByBancoAndNumero(banco, NUMERO);
+		assertEquals(NUMERO, conta.getNumero());
 		assertNotNull(conta.getId());
 		assertEquals(0, conta.getSaldo());
 	}

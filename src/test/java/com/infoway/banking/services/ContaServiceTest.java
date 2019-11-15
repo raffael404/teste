@@ -16,13 +16,13 @@ import com.infoway.banking.entities.Conta;
 import com.infoway.banking.repositories.BancoRepository;
 import com.infoway.banking.repositories.ClienteRepository;
 import com.infoway.banking.repositories.ContaRepository;
-import com.infoway.banking.utils.MockupUtils;
+import com.infoway.banking.utils.TesteUtils;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class ContaServiceTest {
 
-	private static final String numero = "1234567";
+	private static final String NUMERO = "1234567";
 	
 	@Autowired
 	private BancoService bancoService;
@@ -43,7 +43,7 @@ class ContaServiceTest {
 	private ContaRepository contaRepository;
 	
 	@AfterEach
-	public void destruir() {
+	public void limpar() {
 		contaRepository.deleteAll();
 		bancoRepository.deleteAll();
 		clienteRepository.deleteAll();
@@ -51,19 +51,19 @@ class ContaServiceTest {
 	
 	@Test
 	void testBuscar() {
-		Conta c = MockupUtils.criarConta(
-				MockupUtils.CONTA_1234567, MockupUtils.BANCO_001, MockupUtils.CLIENTE_70336818017);
+		Conta c = TesteUtils.criarConta(
+				TesteUtils.CONTA_1234567, TesteUtils.BANCO_001, TesteUtils.CLIENTE_70336818017);
 		this.bancoService.persistir(c.getBanco());
 		this.clienteService.persistir(c.getCliente());
 		this.contaService.persistir(c);
-		Optional<Conta> conta = contaService.buscar(c.getBanco(), numero);
+		Optional<Conta> conta = contaService.buscar(c.getBanco(), NUMERO);
 		assertTrue(conta.isPresent());
 	}
 	
 	@Test
 	void testPersistir() {
-		Conta c = MockupUtils.criarConta(
-				MockupUtils.CONTA_1234567, MockupUtils.BANCO_001, MockupUtils.CLIENTE_70336818017);
+		Conta c = TesteUtils.criarConta(
+				TesteUtils.CONTA_1234567, TesteUtils.BANCO_001, TesteUtils.CLIENTE_70336818017);
 		this.bancoService.persistir(c.getBanco());
 		this.clienteService.persistir(c.getCliente());
 		Conta conta = this.contaService.persistir(c);
@@ -72,13 +72,13 @@ class ContaServiceTest {
 	
 	@Test
 	void testRemover() {
-		Conta c = MockupUtils.criarConta(
-				MockupUtils.CONTA_1234567, MockupUtils.BANCO_001, MockupUtils.CLIENTE_70336818017);
+		Conta c = TesteUtils.criarConta(
+				TesteUtils.CONTA_1234567, TesteUtils.BANCO_001, TesteUtils.CLIENTE_70336818017);
 		this.bancoService.persistir(c.getBanco());
 		this.clienteService.persistir(c.getCliente());
 		this.contaService.persistir(c);
-		this.contaService.remover(c.getBanco(), numero);
-		Optional<Conta> conta = contaService.buscar(c.getBanco(), numero);
+		this.contaService.remover(c.getBanco(), NUMERO);
+		Optional<Conta> conta = contaService.buscar(c.getBanco(), NUMERO);
 		assertFalse(conta.isPresent());
 	}
 

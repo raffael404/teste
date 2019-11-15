@@ -12,32 +12,32 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.infoway.banking.entities.Cliente;
-import com.infoway.banking.utils.MockupUtils;
+import com.infoway.banking.utils.TesteUtils;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
 class ClienteRepositoryTest {
 
-	private static final String cpf = "70336818017";
+	private static final String CPF = "70336818017";
 	
 	@Autowired
 	private ClienteRepository clienteRepository;
 	
 	@BeforeAll
-	public void criar() {
-		clienteRepository.save(MockupUtils.criarCliente(MockupUtils.CLIENTE_70336818017));
+	public void preparar() {
+		clienteRepository.save(TesteUtils.criarCliente(TesteUtils.CLIENTE_70336818017));
 	}
 	
 	@AfterAll
-	public void destruir() {
+	public void limpar() {
 		clienteRepository.deleteAll();
 	}
 	
 	@Test
 	void testBuscarPorCpf() {
-		Cliente cliente = clienteRepository.findById(cpf).get();
-		assertEquals(cpf, cliente.getCpf());
+		Cliente cliente = clienteRepository.findById(CPF).get();
+		assertEquals(CPF, cliente.getCpf());
 	}
 
 }

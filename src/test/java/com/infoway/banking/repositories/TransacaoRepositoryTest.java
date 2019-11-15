@@ -17,17 +17,17 @@ import com.infoway.banking.entities.Banco;
 import com.infoway.banking.entities.Conta;
 import com.infoway.banking.entities.Transacao;
 import com.infoway.banking.enums.TipoTransacao;
-import com.infoway.banking.utils.MockupUtils;
+import com.infoway.banking.utils.TesteUtils;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
 class TransacaoRepositoryTest {
 	
-	private static final String codigoBancoOrigem = "001";
-	private static final String numeroContaOrigem = "1234567";
-	private static final String codigoBancoDestino = "260";
-	private static final String numeroContaDestino = "0000001";
+	private static final String CODIGO_BANCO_ORIGEM = "001";
+	private static final String NUMERO_CONTA_ORIGEM = "1234567";
+	private static final String CODIGO_BANCO_DESTINO = "260";
+	private static final String NUMERO_CONTA_DESTINO = "0000001";
 	
 	@Autowired
 	private BancoRepository bancoRepository;
@@ -42,10 +42,10 @@ class TransacaoRepositoryTest {
 	private TransacaoRepository transacaoRepository;
 
 	@BeforeAll
-	public void criar() {
-		Transacao transacao1 = MockupUtils.criarTransacao(MockupUtils.TRANSFERENCIA_100,
-				MockupUtils.BANCO_001, MockupUtils.CONTA_1234567, MockupUtils.CLIENTE_70336818017,
-				MockupUtils.BANCO_260, MockupUtils.CONTA_0000001, MockupUtils.CLIENTE_20867531010);
+	public void preparar() {
+		Transacao transacao1 = TesteUtils.criarTransacao(TesteUtils.TRANSFERENCIA_100,
+				TesteUtils.BANCO_001, TesteUtils.CONTA_1234567, TesteUtils.CLIENTE_70336818017,
+				TesteUtils.BANCO_260, TesteUtils.CONTA_0000001, TesteUtils.CLIENTE_20867531010);
 		Conta origem = transacao1.getOrigem();
 		Conta destino = transacao1.getDestino();
 		Transacao transacao2 = new Transacao();
@@ -68,7 +68,7 @@ class TransacaoRepositoryTest {
 	}
 	
 	@AfterAll
-	public void destruir() {
+	public void limpar() {
 		this.transacaoRepository.deleteAll();
 		this.contaRepository.deleteAll();
 		this.bancoRepository.deleteAll();
@@ -77,10 +77,10 @@ class TransacaoRepositoryTest {
 	
 	@Test
 	void testBuscarPorOrigemOuDestino() {
-		Banco bancoOrigem = this.bancoRepository.findById(codigoBancoOrigem).get();
-		Conta contaOrigem = this.contaRepository.findByBancoAndNumero(bancoOrigem, numeroContaOrigem);
-		Banco bancoDestino = this.bancoRepository.findById(codigoBancoDestino).get();
-		Conta contaDestino = this.contaRepository.findByBancoAndNumero(bancoDestino, numeroContaDestino);
+		Banco bancoOrigem = this.bancoRepository.findById(CODIGO_BANCO_ORIGEM).get();
+		Conta contaOrigem = this.contaRepository.findByBancoAndNumero(bancoOrigem, NUMERO_CONTA_ORIGEM);
+		Banco bancoDestino = this.bancoRepository.findById(CODIGO_BANCO_DESTINO).get();
+		Conta contaDestino = this.contaRepository.findByBancoAndNumero(bancoDestino, NUMERO_CONTA_DESTINO);
 		List<Transacao> transacoesOrigem = this.transacaoRepository.findAllByOrigemOrDestino(contaOrigem, contaOrigem);
 		List<Transacao> transacoesDestino = this.transacaoRepository.findAllByOrigemOrDestino(contaDestino, contaDestino);
 		assertEquals(transacoesOrigem.size(), 2);

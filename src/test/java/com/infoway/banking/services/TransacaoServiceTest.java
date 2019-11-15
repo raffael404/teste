@@ -19,7 +19,7 @@ import com.infoway.banking.repositories.BancoRepository;
 import com.infoway.banking.repositories.ClienteRepository;
 import com.infoway.banking.repositories.ContaRepository;
 import com.infoway.banking.repositories.TransacaoRepository;
-import com.infoway.banking.utils.MockupUtils;
+import com.infoway.banking.utils.TesteUtils;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -50,7 +50,7 @@ class TransacaoServiceTest {
 	private TransacaoRepository transacaoRepository;
 	
 	@AfterEach
-	public void destruir() {
+	public void limpar() {
 		transacaoRepository.deleteAll();
 		contaRepository.deleteAll();
 		bancoRepository.deleteAll();
@@ -78,9 +78,9 @@ class TransacaoServiceTest {
 	
 	private List<Transacao> criarTransacoes() {
 		List<Transacao> transacoes = new ArrayList<Transacao>();
-		Transacao t1 = MockupUtils.criarTransacao(MockupUtils.TRANSFERENCIA_100,
-				MockupUtils.BANCO_001, MockupUtils.CONTA_1234567, MockupUtils.CLIENTE_70336818017,
-				MockupUtils.BANCO_260, MockupUtils.CONTA_0000001, MockupUtils.CLIENTE_20867531010);
+		Transacao t1 = TesteUtils.criarTransacao(TesteUtils.TRANSFERENCIA_100,
+				TesteUtils.BANCO_001, TesteUtils.CONTA_1234567, TesteUtils.CLIENTE_70336818017,
+				TesteUtils.BANCO_260, TesteUtils.CONTA_0000001, TesteUtils.CLIENTE_20867531010);
 		Conta origem = t1.getOrigem();
 		Conta destino = t1.getDestino();
 		Transacao t2 = new Transacao();

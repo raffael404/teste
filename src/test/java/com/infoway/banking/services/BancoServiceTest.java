@@ -14,13 +14,13 @@ import org.springframework.test.context.ActiveProfiles;
 
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.repositories.BancoRepository;
-import com.infoway.banking.utils.MockupUtils;
+import com.infoway.banking.utils.TesteUtils;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class BancoServiceTest {
 	
-	private static final String codigo = "001";
+	private static final String CODIGO = "001";
 	
 	@Autowired
 	private BancoService bancoService;
@@ -29,28 +29,28 @@ class BancoServiceTest {
 	private BancoRepository bancoRepository;
 	
 	@AfterEach
-	public void destruir() {
+	public void limpar() {
 		bancoRepository.deleteAll();
 	}
 	
 	@Test
 	void testBuscar() {
-		this.bancoService.persistir(MockupUtils.criarBanco(MockupUtils.BANCO_001));
-		Optional<Banco> banco = bancoService.buscar(codigo);
+		this.bancoService.persistir(TesteUtils.criarBanco(TesteUtils.BANCO_001));
+		Optional<Banco> banco = bancoService.buscar(CODIGO);
 		assertTrue(banco.isPresent());
 	}
 	
 	@Test
 	void testPersistir() {
-		Banco banco = this.bancoService.persistir(MockupUtils.criarBanco(MockupUtils.BANCO_001));
+		Banco banco = this.bancoService.persistir(TesteUtils.criarBanco(TesteUtils.BANCO_001));
 		assertNotNull(banco);
 	}
 	
 	@Test
 	void testRemover() {
-		this.bancoService.persistir(MockupUtils.criarBanco(MockupUtils.BANCO_001));
-		this.bancoService.remover(codigo);
-		Optional<Banco> banco = bancoService.buscar(codigo);
+		this.bancoService.persistir(TesteUtils.criarBanco(TesteUtils.BANCO_001));
+		this.bancoService.remover(CODIGO);
+		Optional<Banco> banco = bancoService.buscar(CODIGO);
 		assertFalse(banco.isPresent());
 	}
 
