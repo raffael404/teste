@@ -3,7 +3,7 @@ package com.infoway.banking.controllers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -60,6 +60,12 @@ class UsuarioControllerTest {
 	@Autowired
 	private BancoRepository bancoRepository;
 	
+	@AfterEach
+	public void limpar() {
+		this.bancoRepository.deleteAll();
+		this.clienteRepository.deleteAll();
+	}
+	
 	@Test
 	void testCadastrarBancoValido() throws Exception {
 		Banco banco = TesteUtils.criarBanco(TesteUtils.BANCO_001);
@@ -68,10 +74,10 @@ class UsuarioControllerTest {
 				.content(mapper.writeValueAsString(bancoDto))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
-//				.andExpect(status().isOk())
-//				.andExpect(jsonPath("$.data.codigo").value(CODIGO_BANCO))
-//				.andExpect(jsonPath("$.data.nome").value(NOME_BANCO))
-//				.andExpect(jsonPath("$.data.senha").isNotEmpty())
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.data.codigo").value(CODIGO_BANCO))
+				.andExpect(jsonPath("$.data.nome").value(NOME_BANCO))
+				.andExpect(jsonPath("$.data.senha").isNotEmpty())
 				.andExpect(jsonPath("$.errors").isEmpty());
 	}
 	
@@ -105,12 +111,6 @@ class UsuarioControllerTest {
 		ClienteDto clienteDto = new ClienteDto(cliente);
 		TesteUtils.fazerRequisicaoInvalida(clienteDto, "error.existing.cpf", URL_CADASTRAR_CLIENTE, mvc, ms);
 		clienteService.remover(CPF_CLIENTE);
-	}
-	
-	@AfterAll
-	public void limpar() {
-		this.bancoRepository.deleteAll();
-		this.clienteRepository.deleteAll();
 	}
 	
 }
