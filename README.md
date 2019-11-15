@@ -12,12 +12,22 @@ Certifique-se de ter o Maven instalado e adicionado ao PATH de seu sistema opera
 git clone https://github.com/raffael404/banking-services.git
 cd banking-services
 mvn spring-boot:run
-Acesse os endpoints através da url http://localhost:8080 e envie as requisições através de um cliente HTTP, como o Postman.
+Acesse os endpoints através da url http://localhost:8080/banking
+```
+As requisições aceitas são todas do tipo POST e podem ser enviadas através de um cliente HTTP qualquer, como o Postman.
+### Endpoints
+```
+/usuario/cadastrar/banco
+/usuario/cadastrar/cliente
+/banco/cadastrar/agencia
+/banco/remover/agencia
+/conta/abrir
+/conta/fechar
+/conta/depositar
+/conta/sacar
+/conta/transferir
+/conta/extrato
 ```
 
-### Importando o projeto no Eclipse ou STS
-No terminal, execute a seguinte operação:
-```
-mvn eclipse:eclipse
-```
-No Eclipse/STS, importe o projeto como projeto Maven.
+### Observações
+Eu não consegui implementar o servidor de autenticação. Assim, o sistema está usando apenas uma autenticação bem básica, passando-se a senha como um dos atributos do objeto JSON enviado na requisição.
