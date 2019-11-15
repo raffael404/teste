@@ -24,10 +24,14 @@ public class TransacaoDto extends DadoProtegido {
 		this.id = transacao.getId();
 		this.data = DataUtils.converterParaString(transacao.getData(), locale);
 		this.valor = transacao.getValor();
-		this.bancoOrigem = transacao.getOrigem().getBanco().getCodigo();
-		this.contaOrigem = transacao.getOrigem().getNumero();
-		this.bancoDestino = transacao.getDestino().getBanco().getCodigo();
-		this.contaDestino = transacao.getDestino().getNumero();
+		if (transacao.getOrigem() != null) {
+			this.bancoOrigem = transacao.getOrigem().getBanco().getCodigo();
+			this.contaOrigem = transacao.getOrigem().getNumero();
+		}
+		if (transacao.getDestino() != null) {
+			this.bancoDestino = transacao.getDestino().getBanco().getCodigo();
+			this.contaDestino = transacao.getDestino().getNumero();
+		}
 	}
 	
 	public Long getId() {

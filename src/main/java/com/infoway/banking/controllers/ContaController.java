@@ -180,7 +180,7 @@ public class ContaController {
 				conta = contaService.buscar(banco.get(), transacaoDto.getNumeroConta());
 				if (!conta.isPresent())
 					result.addError(new ObjectError("conta", "error.nonexistent.account"));
-				try {
+				else try {
 					conta.get().creditar(transacaoDto.getValor());
 				} catch (ValorInvalidoException e) {
 					result.addError(new ObjectError("conta", e.getMessage()));
@@ -318,15 +318,13 @@ public class ContaController {
 				contaDestino = contaService.buscar(bancoDestino.get(), transacaoDto.getContaDestino());
 				if (!contaDestino.isPresent())
 					result.addError(new ObjectError("conta", "error.nonexistent.account.destination"));
-				try {
+				else try {
 					contaDestino.get().creditar(transacaoDto.getValor());
-				} catch (ValorInvalidoException e) {
-					result.addError(new ObjectError("transacao", e.getMessage()));
-				}
+				} catch (ValorInvalidoException e) {}
 			}
 			
-			if (transacaoDto.getBancoOrigem() == transacaoDto.getBancoDestino()
-					&& transacaoDto.getContaOrigem() == transacaoDto.getContaDestino())
+			if (transacaoDto.getBancoOrigem().contentEquals(transacaoDto.getBancoDestino())
+					&& transacaoDto.getContaOrigem().contentEquals(transacaoDto.getContaDestino()))
 				result.addError(new ObjectError("conta", "error.equal.account"));
 		}
 		
