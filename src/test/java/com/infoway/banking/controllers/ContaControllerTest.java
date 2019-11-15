@@ -117,7 +117,6 @@ class ContaControllerTest {
 				.andExpect(jsonPath("$.data.saldo").value(0))
 				.andExpect(jsonPath("$.data.codigoBanco").value(CODIGO_BANCO_1))
 				.andExpect(jsonPath("$.data.cpfCliente").value(CPF_CLIENTE_1))
-				.andExpect(jsonPath("$.data.senha").isNotEmpty())
 				.andExpect(jsonPath("$.errors").isEmpty());
 	}
 	
@@ -152,7 +151,6 @@ class ContaControllerTest {
 				.andExpect(jsonPath("$.data.numero").value(NUMERO_CONTA_1))
 				.andExpect(jsonPath("$.data.codigoBanco").value(CODIGO_BANCO_1))
 				.andExpect(jsonPath("$.data.cpfCliente").value(CPF_CLIENTE_1))
-				.andExpect(jsonPath("$.data.senha").value(SENHA_1))
 				.andExpect(jsonPath("$.errors").isEmpty());
 	}
 	
@@ -394,7 +392,6 @@ class ContaControllerTest {
 		conta.setBanco(banco);
 		conta.setCliente(cliente);
 		conta.setNumero(numeroConta);
-		conta.setSenha(senha);
 		return conta;
 	}
 	

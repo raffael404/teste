@@ -22,7 +22,7 @@ public class Conta implements Serializable {
 	
 	private Long id;
 	private String numero;
-	private String senha;
+//	private String senha;
 	private Double saldo;
 	private Banco banco;
 	private Cliente cliente;
@@ -63,13 +63,13 @@ public class Conta implements Serializable {
 		this.numero = numero;
 	}
 	
-	@Column(name = "senha", nullable = false)
-	public String getSenha() {
-		return senha;
-	}
-	public void setSenha(String senha) {
-		this.senha = senha;
-	}
+//	@Column(name = "senha", nullable = false)
+//	public String getSenha() {
+//		return senha;
+//	}
+//	public void setSenha(String senha) {
+//		this.senha = senha;
+//	}
 	
 	@Column(name = "saldo", nullable = false)
 	public Double getSaldo() {
@@ -97,7 +97,7 @@ public class Conta implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "Conta [id=" + id + ", numero=" + numero + ", senha=" + senha + ", saldo=" + saldo + ", banco=" + banco
+		return "Conta [id=" + id + ", numero=" + numero + ", saldo=" + saldo + ", banco=" + banco
 				+ ", cliente=" + cliente + "]";
 	}
 	

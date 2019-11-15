@@ -102,7 +102,6 @@ public class ContaController {
 		
 		Conta conta = new Conta();
 		conta.setNumero(contaDto.getNumero());
-		conta.setSenha(contaDto.getSenha());
 		conta.setBanco(banco.get());
 		conta.setCliente(cliente.get());
 		contaService.persistir(conta);

@@ -39,7 +39,6 @@ class TesteUtilsTest {
 		assertNull(contaNula);
 		assertNotNull(conta.getNumero());
 		assertNotNull(conta.getSaldo());
-		assertNotNull(conta.getSenha());
 		assertNotNull(conta.getBanco());
 		assertNotNull(conta.getCliente());
 	}

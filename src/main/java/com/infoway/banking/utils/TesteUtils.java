@@ -82,12 +82,10 @@ public class TesteUtils {
 		switch (conta == null ? -1 : conta) {
 		case CONTA_1234567:
 			c.setNumero("1234567");
-			c.setSenha("preguica");
 			break;
 			
 		case CONTA_0000001:
 			c.setNumero("0000001");
-			c.setSenha("maispreguica");
 			break;
 
 		default:
