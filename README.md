@@ -14,7 +14,7 @@ cd banking-services
 mvn spring-boot:run
 Acesse os endpoints através da url http://localhost:8080/banking
 ```
-As requisições aceitas são todas do tipo POST e podem ser enviadas através de um cliente HTTP qualquer, como o Postman.
+As requisições aceitas são todas do tipo POST e podem ser enviadas através de um cliente HTTP qualquer, como o Postman. A aplicação também pode ser testada diretamente pelo Swagger, através da URL http://localhost:8080/banking/swagger-ui.html.
 ### Endpoints
 ```
 /usuario/cadastrar/banco
