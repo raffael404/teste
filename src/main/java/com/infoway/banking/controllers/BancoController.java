@@ -62,13 +62,13 @@ public class BancoController {
 				if (!SenhaUtils.verificarValidade(agenciaDto.getSenha(), banco.get().getSenha()))
 					result.addError(new ObjectError("banco", "error.invalid.password"));
 				for (Agencia agencia : banco.get().getAgencias()) {
-					if (agencia.getNumero() == agenciaDto.getNumero()) {
+					if (agencia.getNumero().contentEquals(agenciaDto.getNumero())) {
 						result.addError(new ObjectError("agencia", "error.existing.number"));
 						break;
 					}
 				}
 				for (Agencia agencia : banco.get().getAgencias()) {
-					if (agencia.getCnpj() == agenciaDto.getCnpj()) {
+					if (agencia.getCnpj().contentEquals(agenciaDto.getCnpj())) {
 						result.addError(new ObjectError("agencia", "error.existing.cnpj"));
 						break;
 					}
@@ -123,7 +123,7 @@ public class BancoController {
 					result.addError(new ObjectError("banco", "error.invalid.password"));
 				boolean agenciaEncontrada = false;
 				for (Agencia ag : banco.get().getAgencias()) {
-					if (ag.getNumero() == agenciaDto.getNumero()) {
+					if (ag.getNumero().contentEquals(agenciaDto.getNumero())) {
 						agenciaEncontrada = true;
 						agencia = ag;
 						break;
