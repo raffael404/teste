@@ -3,7 +3,7 @@ package com.infoway.banking.controllers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -60,7 +60,7 @@ class UsuarioControllerTest {
 	@Autowired
 	private BancoRepository bancoRepository;
 	
-	@BeforeEach
+	@AfterEach
 	public void limpar() {
 		this.bancoRepository.deleteAll();
 		this.clienteRepository.deleteAll();
