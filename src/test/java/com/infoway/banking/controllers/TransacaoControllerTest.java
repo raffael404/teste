@@ -30,6 +30,8 @@ import com.infoway.banking.entities.Conta;
 import com.infoway.banking.entities.Role;
 import com.infoway.banking.entities.Transacao;
 import com.infoway.banking.enums.TipoTransacao;
+import com.infoway.banking.repositories.BancoRepository;
+import com.infoway.banking.repositories.ClienteRepository;
 import com.infoway.banking.repositories.ContaRepository;
 import com.infoway.banking.repositories.TransacaoRepository;
 import com.infoway.banking.services.BancoService;
@@ -82,6 +84,12 @@ class TransacaoControllerTest {
 	private RoleService roleService;
 	
 	@Autowired
+	private BancoRepository bancoRepository;
+	
+	@Autowired
+	private ClienteRepository clienteRepository;
+	
+	@Autowired
 	private ContaRepository contaRepository;
 	
 	@Autowired
@@ -89,6 +97,8 @@ class TransacaoControllerTest {
 
 	@BeforeAll
 	public void preparar() {
+		clienteRepository.deleteAll();
+		bancoRepository.deleteAll();
 		Banco b1 = TesteUtils.criarBanco(TesteUtils.BANCO_001);
 		Banco b2 = TesteUtils.criarBanco(TesteUtils.BANCO_260);
 		Cliente c1 = TesteUtils.criarCliente(TesteUtils.CLIENTE_70336818017);
