@@ -3,7 +3,7 @@ package com.infoway.banking.controllers;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -60,7 +60,7 @@ class UsuarioControllerTest {
 	@Autowired
 	private BancoRepository bancoRepository;
 	
-	@AfterEach
+	@BeforeEach
 	public void limpar() {
 		this.bancoRepository.deleteAll();
 		this.clienteRepository.deleteAll();
@@ -90,7 +90,6 @@ class UsuarioControllerTest {
 		bancoDto = new BancoDto(banco);
 		bancoDto.setCodigo("000");
 		TesteUtils.testarRequisicaoInvalida(bancoDto, "error.existing.username", URL_CADASTRAR_BANCO, mvc, ms);
-		bancoService.remover(CODIGO_BANCO);
 	}
 	
 	@Test
@@ -117,7 +116,6 @@ class UsuarioControllerTest {
 		clienteDto = new ClienteDto(cliente);
 		clienteDto.setCpf("20867531010");
 		TesteUtils.testarRequisicaoInvalida(clienteDto, "error.existing.username", URL_CADASTRAR_CLIENTE, mvc, ms);
-		clienteService.remover(CPF_CLIENTE);
 	}
 	
 }
