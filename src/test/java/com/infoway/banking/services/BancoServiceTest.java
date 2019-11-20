@@ -36,7 +36,7 @@ class BancoServiceTest {
 	@Test
 	void testBuscar() {
 		this.bancoService.persistir(TesteUtils.criarBanco(TesteUtils.BANCO_001));
-		Optional<Banco> banco = bancoService.buscar(CODIGO);
+		Optional<Banco> banco = bancoService.buscarPorCodigo(CODIGO);
 		assertTrue(banco.isPresent());
 	}
 	
@@ -50,7 +50,7 @@ class BancoServiceTest {
 	void testRemover() {
 		this.bancoService.persistir(TesteUtils.criarBanco(TesteUtils.BANCO_001));
 		this.bancoService.remover(CODIGO);
-		Optional<Banco> banco = bancoService.buscar(CODIGO);
+		Optional<Banco> banco = bancoService.buscarPorCodigo(CODIGO);
 		assertFalse(banco.isPresent());
 	}
 

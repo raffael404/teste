@@ -10,14 +10,16 @@ import com.infoway.banking.entities.Cliente;
 public class ClienteDto extends UsuarioDto {
 	
 	private String cpf;
-	private String nome;
+	private String nomeCliente;
 	
 	public ClienteDto() {}
-
+	
 	public ClienteDto(Cliente cliente) {
 		this.cpf = cliente.getCpf();
-		this.nome = cliente.getNome();
-		this.setSenha(cliente.getSenha());
+		this.nomeCliente = cliente.getNome();
+		this.setEmail(cliente.getEmail());
+		this.setNomeUsuario(cliente.getUsername());
+		this.setSenha(cliente.getPassword());
 	}
 	
 	@NotEmpty(message = "error.empty.cpf")
@@ -29,18 +31,18 @@ public class ClienteDto extends UsuarioDto {
 		this.cpf = cpf;
 	}
 	
-	@NotEmpty(message = "error.empty.name")
+	@NotEmpty(message = "error.empty.client.name")
 	@Length(min = 5, max = 255, message = "error.size.client.name")
-	public String getNome() {
-		return nome;
+	public String getNomeCliente() {
+		return nomeCliente;
 	}
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setNomeCliente(String nomeCliente) {
+		this.nomeCliente = nomeCliente;
 	}
 
 	@Override
 	public String toString() {
-		return "ClienteDto [cpf=" + cpf + ", nome=" + nome + "]";
+		return "NovoClienteDto [cpf=" + cpf + ", nomeCliente=" + nomeCliente + ", usuario=" + super.toString() + "]";
 	}
-	
+
 }

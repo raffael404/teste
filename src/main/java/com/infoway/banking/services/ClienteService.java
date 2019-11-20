@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.infoway.banking.entities.Cliente;
+import com.infoway.banking.entities.User;
 import com.infoway.banking.repositories.ClienteRepository;
 
 @Service
@@ -37,9 +38,24 @@ public class ClienteService {
 	 * @param cpf
 	 * @return Optional<Cliente>
 	 */
-	public Optional<Cliente> buscar(String cpf) {
+	public Optional<Cliente> buscarPorCpf(String cpf) {
 		log.info("Buscando um cliente com o CPF {}", cpf);
-		return clienteRepository.findById(cpf);
+		return clienteRepository.findByCpf(cpf);
+	}
+	
+	/**
+	 * 
+	 * Retorna um cliente, dado um nome de usuário.
+	 * 
+	 * @param nomeUsuario
+	 * @return Optional<Cliente>
+	 */
+	public Optional<Cliente> buscarPorNomeUsuario(String nomeUsuario) {
+		log.info("Buscando um cliente com o nome de usuário {}", nomeUsuario);
+		Optional<User> user = clienteRepository.findByUsername(nomeUsuario);
+		if (user.isPresent())
+			return Optional.ofNullable((Cliente) user.get());
+		else return Optional.empty();
 	}
 	
 	/**
@@ -50,7 +66,7 @@ public class ClienteService {
 	 */
 	public void remover(String cpf) {
 		log.info("Removendo cliente com o CPF {}", cpf);
-		clienteRepository.deleteById(cpf);
+		clienteRepository.deleteByCpf(cpf);
 	}
 
 }

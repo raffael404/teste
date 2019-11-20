@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.infoway.banking.entities.Conta;
 import com.infoway.banking.entities.Transacao;
 
-public interface TransacaoRepository extends JpaRepository<Transacao, Long>{
+public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 	@Transactional(readOnly = true)
 	List<Transacao> findAllByOrigemOrDestino(Conta origem, Conta destino);
 }

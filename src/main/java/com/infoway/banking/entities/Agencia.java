@@ -45,5 +45,10 @@ public class Agencia implements Serializable {
 	public void setBanco(Banco banco) {
 		this.banco = banco;
 	}
+
+	@Override
+	public String toString() {
+		return "Agencia [cnpj=" + cnpj + ", numero=" + numero + ", banco=" + super.toString() + "]";
+	}
 	
 }

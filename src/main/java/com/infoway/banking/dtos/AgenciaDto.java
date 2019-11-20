@@ -8,18 +8,16 @@ import org.hibernate.validator.constraints.br.CNPJ;
 
 import com.infoway.banking.entities.Agencia;
 
-public class AgenciaDto extends DadoProtegido {
+public class AgenciaDto {
 	
 	private String cnpj;
 	private String numero;
-	private String codigoBanco;
 	
 	public AgenciaDto() {}
 	
 	public AgenciaDto(Agencia agencia) {
 		this.cnpj = agencia.getCnpj();
 		this.numero = agencia.getNumero();
-		this.codigoBanco = agencia.getBanco().getCodigo();
 	}
 
 	@NotEmpty(message = "error.empty.cnpj")
@@ -41,18 +39,10 @@ public class AgenciaDto extends DadoProtegido {
 	public void setNumero(String numero) {
 		this.numero = numero;
 	}
-	
-	@NotEmpty(message = "error.empty.bank.code")
-	public String getCodigoBanco() {
-		return codigoBanco;
-	}
-	public void setCodigoBanco(String codigoBanco) {
-		this.codigoBanco = codigoBanco;
-	}
 
 	@Override
 	public String toString() {
-		return "AgenciaDto [cnpj=" + cnpj + ", numero=" + numero + ", codigoBanco=" + codigoBanco + "]";
+		return "AgenciaDto [cnpj=" + cnpj + ", numero=" + numero + "]";
 	}
 	
 }

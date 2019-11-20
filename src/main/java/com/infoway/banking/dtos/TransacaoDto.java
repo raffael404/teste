@@ -6,13 +6,15 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.infoway.banking.entities.Transacao;
+import com.infoway.banking.enums.TipoTransacao;
 import com.infoway.banking.utils.DataUtils;
 
-public class TransacaoDto extends DadoProtegido {
+public class TransacaoDto {
 	
 	private Long id;
 	private String data;
 	private Double valor;
+	private TipoTransacao tipo;
 	private String bancoOrigem;
 	private String contaOrigem;
 	private String bancoDestino;
@@ -24,6 +26,7 @@ public class TransacaoDto extends DadoProtegido {
 		this.id = transacao.getId();
 		this.data = DataUtils.converterParaString(transacao.getData(), locale);
 		this.valor = transacao.getValor();
+		this.tipo = transacao.getTipo();
 		if (transacao.getOrigem() != null) {
 			this.bancoOrigem = transacao.getOrigem().getBanco().getCodigo();
 			this.contaOrigem = transacao.getOrigem().getNumero();
@@ -87,11 +90,19 @@ public class TransacaoDto extends DadoProtegido {
 	public void setContaDestino(String contaDestino) {
 		this.contaDestino = contaDestino;
 	}
-	
+
+	public TipoTransacao getTipo() {
+		return tipo;
+	}
+	public void setTipo(TipoTransacao tipo) {
+		this.tipo = tipo;
+	}
+
 	@Override
 	public String toString() {
-		return "TransacaoDto [valor=" + valor + ", bancoOrigem=" + bancoOrigem + ", contaOrigem=" + contaOrigem
-				+ ", bancoDestino=" + bancoDestino + ", contaDestino=" + contaDestino + "]";
+		return "TransacaoDto [id=" + id + ", data=" + data + ", valor=" + valor + ", tipo=" + tipo
+				+ ", bancoOrigem=" + bancoOrigem + ", contaOrigem=" + contaOrigem + ", bancoDestino=" + bancoDestino
+				+ ", contaDestino=" + contaDestino + "]";
 	}
 	
 }

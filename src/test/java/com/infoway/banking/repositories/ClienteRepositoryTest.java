@@ -36,7 +36,7 @@ class ClienteRepositoryTest {
 	
 	@Test
 	void testBuscarPorCpf() {
-		Cliente cliente = clienteRepository.findById(CPF).get();
+		Cliente cliente = clienteRepository.findByCpf(CPF).get();
 		assertEquals(CPF, cliente.getCpf());
 	}
 

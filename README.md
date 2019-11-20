@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/raffael404/banking-services.svg?branch=master)](https://travis-ci.org/raffael404/banking-services)
+[![Build Status](https://travis-ci.org/raffael404/teste.svg?branch=master)](https://travis-ci.org/raffael404/teste)
 
 # Banking Services
 API Restful genérica para serviços bancários.

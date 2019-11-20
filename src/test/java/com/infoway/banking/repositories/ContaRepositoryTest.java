@@ -51,7 +51,7 @@ class ContaRepositoryTest {
 	
 	@Test
 	void testBuscarPorBancoENumero() {
-		Banco banco = this.bancoRepository.findById(CODIGO_BANCO).get();
+		Banco banco = this.bancoRepository.findByCodigo(CODIGO_BANCO).get();
 		Conta conta = this.contaRepository.findByBancoAndNumero(banco, NUMERO);
 		assertEquals(NUMERO, conta.getNumero());
 		assertNotNull(conta.getId());

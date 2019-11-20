@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.infoway.banking.entities.Banco;
+import com.infoway.banking.entities.User;
 import com.infoway.banking.repositories.BancoRepository;
 
 @Service
@@ -37,9 +38,24 @@ public class BancoService {
 	 * @param codigo
 	 * @return Optional<Banco>
 	 */
-	public Optional<Banco> buscar(String codigo) {
+	public Optional<Banco> buscarPorCodigo(String codigo) {
 		log.info("Buscando um banco com o codigo {}", codigo);
-		return bancoRepository.findById(codigo);
+		return bancoRepository.findByCodigo(codigo);
+	}
+	
+	/**
+	 * 
+	 * Retorna um banco, dado um nome de usuário.
+	 * 
+	 * @param nomeUsuario
+	 * @return Optional<Banco>
+	 */
+	public Optional<Banco> buscarPorNomeUsuario(String nomeUsuario) {
+		log.info("Buscando um banco com o usuário {}", nomeUsuario);
+		Optional<User> user = bancoRepository.findByUsername(nomeUsuario);
+		if (user.isPresent())
+			return Optional.ofNullable((Banco)user.get());
+		else return Optional.empty();
 	}
 	
 	/**
@@ -50,7 +66,7 @@ public class BancoService {
 	 */
 	public void remover(String codigo) {
 		log.info("Removendo banco com o codigo {}", codigo);
-		bancoRepository.deleteById(codigo);
+		bancoRepository.deleteByCodigo(codigo);
 	}
 	
 }

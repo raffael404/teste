@@ -8,16 +8,18 @@ import org.hibernate.validator.constraints.Length;
 import com.infoway.banking.entities.Banco;
 
 public class BancoDto extends UsuarioDto {
-		
+	
 	private String codigo;
-	private String nome;
+	private String nomeBanco;
 	
 	public BancoDto() {}
-		
+	
 	public BancoDto(Banco banco) {
 		this.codigo = banco.getCodigo();
-		this.nome = banco.getNome();
-		this.setSenha(banco.getSenha());
+		this.nomeBanco = banco.getNome();
+		this.setEmail(banco.getEmail());
+		this.setNomeUsuario(banco.getUsername());
+		this.setSenha(banco.getPassword());
 	}
 
 	@NotEmpty(message = "error.empty.code")
@@ -30,18 +32,18 @@ public class BancoDto extends UsuarioDto {
 		this.codigo = codigo;
 	}
 	
-	@NotEmpty(message = "error.empty.name")
+	@NotEmpty(message = "error.empty.bank.name")
 	@Length(min = 1, max = 50, message = "error.size.bank.name")
-	public String getNome() {
-		return nome;
+	public String getNomeBanco() {
+		return nomeBanco;
 	}
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setNomeBanco(String nomeBanco) {
+		this.nomeBanco = nomeBanco;
 	}
 
 	@Override
 	public String toString() {
-		return "BancoDto [codigo=" + codigo + ", nome=" + nome + "]";
+		return "NovoBancoDto [codigo=" + codigo + ", nomeBanco=" + nomeBanco + ", usuario=" + super.toString() + "]";
 	}
 	
 }

@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +25,6 @@ import com.infoway.banking.entities.Agencia;
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.responses.Response;
 import com.infoway.banking.services.BancoService;
-import com.infoway.banking.utils.SenhaUtils;
 
 @RestController
 @RequestMapping("/banco")
@@ -48,35 +50,25 @@ public class BancoController {
 	 * @return ResponseEntity<Response<AgenciaDto>>
 	 */
 	@PostMapping(value = "/cadastrar/agencia")
+	@PreAuthorize("hasAuthority('create_agencia')")
 	public ResponseEntity<Response<AgenciaDto>> cadastrarAgencia(Locale locale,
 			@Valid @RequestBody AgenciaDto agenciaDto, BindingResult result) {
 		log.info("Cadastrando agencia: {}", agenciaDto.toString());
 		
 		Optional<Banco> banco = null;
-		if (agenciaDto.getCodigoBanco() != null && agenciaDto.getNumero() != null
-				&& agenciaDto.getCnpj() != null && agenciaDto.getSenha() != null) {
-			banco = bancoService.buscar(agenciaDto.getCodigoBanco());
-			if (!banco.isPresent())
-				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
-			else {
-				if (!SenhaUtils.verificarValidade(agenciaDto.getSenha(), banco.get().getSenha()))
-					result.addError(new ObjectError("banco", "error.invalid.password"));
-				for (Agencia agencia : banco.get().getAgencias()) {
-					if (agencia.getNumero().contentEquals(agenciaDto.getNumero())) {
-						result.addError(new ObjectError("agencia", "error.existing.number"));
-						break;
-					}
-				}
-				for (Agencia agencia : banco.get().getAgencias()) {
-					if (agencia.getCnpj().contentEquals(agenciaDto.getCnpj())) {
-						result.addError(new ObjectError("agencia", "error.existing.cnpj"));
-						break;
-					}
-				}
-			}
+		if (agenciaDto.getNumero() != null && agenciaDto.getCnpj() != null) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			banco = bancoService.buscarPorNomeUsuario(auth.getName());
+			banco.get().getAgencias().forEach(agencia -> {
+				if (agencia.getNumero().contentEquals(agenciaDto.getNumero()))
+					result.addError(new ObjectError("agencia", "error.existing.number"));
+			});
+			banco.get().getAgencias().forEach(agencia -> {
+				if (agencia.getCnpj().contentEquals(agenciaDto.getCnpj()))
+					result.addError(new ObjectError("agencia", "error.existing.cnpj"));
+			});
 		}
-		
-		
+			
 		Response<AgenciaDto> response = new Response<AgenciaDto>();
 		if (result.hasErrors()) {
 			log.error("Erro validando dados da agencia: {}", result.getAllErrors());
@@ -107,31 +99,24 @@ public class BancoController {
 	 * @return ResponseEntity<Response<AgenciaDto>>
 	 */
 	@PostMapping(value = "/remover/agencia")
+	@PreAuthorize("hasAuthority('delete_agencia')")
 	public ResponseEntity<Response<AgenciaDto>> removerAgencia(Locale locale,
 			@Valid @RequestBody AgenciaDto agenciaDto, BindingResult result) {
 		log.info("Removendo agencia: {}", agenciaDto.toString());
 		
 		Optional<Banco> banco = null;
 		Agencia agencia = null;
-		if (agenciaDto.getCodigoBanco() != null && agenciaDto.getNumero() != null
-				&& agenciaDto.getSenha() != null) {
-			banco = bancoService.buscar(agenciaDto.getCodigoBanco());
-			if (!banco.isPresent())
-				result.addError(new ObjectError("banco", "error.nonexistent.bank"));
-			else {
-				if (!SenhaUtils.verificarValidade(agenciaDto.getSenha(), banco.get().getSenha()))
-					result.addError(new ObjectError("banco", "error.invalid.password"));
-				boolean agenciaEncontrada = false;
-				for (Agencia ag : banco.get().getAgencias()) {
-					if (ag.getNumero().contentEquals(agenciaDto.getNumero())) {
-						agenciaEncontrada = true;
-						agencia = ag;
-						break;
-					}
+		if (agenciaDto.getNumero() != null) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			banco = bancoService.buscarPorNomeUsuario(auth.getName());
+			for (Agencia ag : banco.get().getAgencias()) {
+				if (ag.getNumero().contentEquals(agenciaDto.getNumero())) {
+					agencia = ag;
+					break;
 				}
-				if (!agenciaEncontrada)
-					result.addError(new ObjectError("agencia", "error.nonexistent.branch"));
 			}
+			if (agencia == null)
+				result.addError(new ObjectError("agencia", "error.nonexistent.branch"));
 		}
 		
 		Response<AgenciaDto> response = new Response<AgenciaDto>();
@@ -148,6 +133,5 @@ public class BancoController {
 		response.setData(agenciaDto);
 		return ResponseEntity.ok(response);
 	}
-	
 	
 }

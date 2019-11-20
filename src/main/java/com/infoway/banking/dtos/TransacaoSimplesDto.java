@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import com.infoway.banking.entities.Transacao;
 import com.infoway.banking.utils.DataUtils;
 
-public class TransacaoSimplesDto extends DadoProtegido {
+public class TransacaoSimplesDto {
 	
 	private Long id;
 	private String data;
@@ -67,6 +67,12 @@ public class TransacaoSimplesDto extends DadoProtegido {
 	}
 	public void setNumeroConta(String numeroConta) {
 		this.numeroConta = numeroConta;
+	}
+
+	@Override
+	public String toString() {
+		return "TransacaoSimplesDto [id=" + id + ", data=" + data + ", valor=" + valor + ", codigoBanco=" + codigoBanco
+				+ ", numeroConta=" + numeroConta + "]";
 	}
 	
 }

@@ -8,28 +8,26 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "banco")
-public class Banco extends Usuario implements Serializable{
+public class Banco extends User implements Serializable{
 	
 	private static final long serialVersionUID = 6877614390427038828L;
 	
 	private String codigo;
 	private String nome;
-	private List<Conta> contas;
+//	private List<Conta> contas;
 	private List<Agencia> agencias;
 	
 	public Banco() {
-		this.contas = new ArrayList<Conta>();
+//		this.contas = new ArrayList<Conta>();
 		this.agencias = new ArrayList<Agencia>();
 	}
 	
-	@Id
-	@Column(name = "codigo", nullable = false, length = 3)
+	@Column(name = "codigo", unique = true , nullable = false, length = 3)
 	public String getCodigo() {
 		return codigo;
 	}
@@ -45,15 +43,15 @@ public class Banco extends Usuario implements Serializable{
 		this.nome = nome;
 	}
 	
-	@OneToMany(mappedBy = "banco", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	public List<Conta> getContas() {
-		return contas;
-	}
-	public void setContas(List<Conta> contas) {
-		this.contas = contas;
-	}
+//	@OneToMany(mappedBy = "banco", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//	public List<Conta> getContas() {
+//		return contas;
+//	}
+//	public void setContas(List<Conta> contas) {
+//		this.contas = contas;
+//	}
 	
-	@OneToMany(mappedBy = "banco", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "banco", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	public List<Agencia> getAgencias() {
 		return agencias;
 	}

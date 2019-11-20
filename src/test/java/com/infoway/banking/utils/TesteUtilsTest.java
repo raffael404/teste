@@ -18,7 +18,6 @@ class TesteUtilsTest {
 		assertNull(bancoNulo);
 		assertNotNull(banco.getCodigo());
 		assertNotNull(banco.getNome());
-		assertNotNull(banco.getSenha());
 	}
 	
 	@Test
@@ -28,7 +27,6 @@ class TesteUtilsTest {
 		assertNull(clienteNulo);
 		assertNotNull(cliente.getCpf());
 		assertNotNull(cliente.getNome());
-		assertNotNull(cliente.getSenha());
 	}
 	
 	@Test

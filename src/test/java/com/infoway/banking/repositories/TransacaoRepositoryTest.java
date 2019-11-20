@@ -77,9 +77,9 @@ class TransacaoRepositoryTest {
 	
 	@Test
 	void testBuscarPorOrigemOuDestino() {
-		Banco bancoOrigem = this.bancoRepository.findById(CODIGO_BANCO_ORIGEM).get();
+		Banco bancoOrigem = this.bancoRepository.findByCodigo(CODIGO_BANCO_ORIGEM).get();
 		Conta contaOrigem = this.contaRepository.findByBancoAndNumero(bancoOrigem, NUMERO_CONTA_ORIGEM);
-		Banco bancoDestino = this.bancoRepository.findById(CODIGO_BANCO_DESTINO).get();
+		Banco bancoDestino = this.bancoRepository.findByCodigo(CODIGO_BANCO_DESTINO).get();
 		Conta contaDestino = this.contaRepository.findByBancoAndNumero(bancoDestino, NUMERO_CONTA_DESTINO);
 		List<Transacao> transacoesOrigem = this.transacaoRepository.findAllByOrigemOrDestino(contaOrigem, contaOrigem);
 		List<Transacao> transacoesDestino = this.transacaoRepository.findAllByOrigemOrDestino(contaDestino, contaDestino);

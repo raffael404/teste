@@ -1,5 +1,7 @@
 package com.infoway.banking.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.validation.Valid;
@@ -20,9 +22,11 @@ import com.infoway.banking.dtos.BancoDto;
 import com.infoway.banking.dtos.ClienteDto;
 import com.infoway.banking.entities.Banco;
 import com.infoway.banking.entities.Cliente;
+import com.infoway.banking.entities.Role;
 import com.infoway.banking.responses.Response;
 import com.infoway.banking.services.BancoService;
 import com.infoway.banking.services.ClienteService;
+import com.infoway.banking.services.RoleService;
 import com.infoway.banking.utils.SenhaUtils;
 
 @RestController
@@ -36,6 +40,9 @@ public class UsuarioController {
 	
 	@Autowired
 	private BancoService bancoService;
+	
+	@Autowired
+	private RoleService roleService;
 	
 	@Autowired
     private MessageSource ms;
@@ -54,8 +61,11 @@ public class UsuarioController {
 			@Valid @RequestBody ClienteDto clienteDto, BindingResult result) {
 		log.info("Cadastrando cliente: {}", clienteDto.toString());
 		
-		if (clienteDto.getCpf() != null && clienteService.buscar(clienteDto.getCpf()).isPresent())
+		if (clienteDto.getCpf() != null && clienteService.buscarPorCpf(clienteDto.getCpf()).isPresent())
 			result.addError(new ObjectError("cliente", "error.existing.cpf"));
+		if (clienteDto.getNomeUsuario() != null
+				&& clienteService.buscarPorNomeUsuario(clienteDto.getNomeUsuario()).isPresent())
+			result.addError(new ObjectError("cliente", "error.existing.username"));
 		
 		Response<ClienteDto> response = new Response<ClienteDto>();
 		if (result.hasErrors()) {
@@ -67,11 +77,20 @@ public class UsuarioController {
 		
 		Cliente cliente = new Cliente();
 		cliente.setCpf(clienteDto.getCpf());
-		cliente.setNome(clienteDto.getNome());
-		cliente.setSenha(SenhaUtils.criptografar(clienteDto.getSenha()));
+		cliente.setNome(clienteDto.getNomeCliente());
+		cliente.setUsername(clienteDto.getNomeUsuario());
+		cliente.setEmail(clienteDto.getEmail());
+		cliente.setPassword("{bcrypt}" + SenhaUtils.criptografar(clienteDto.getSenha()));
+		cliente.setAccountNonExpired(true);
+		cliente.setAccountNonLocked(true);
+		cliente.setCredentialsNonExpired(true);
+		cliente.setEnabled(true);
+		List<Role> roles = new ArrayList<Role>();
+		roles.add(roleService.buscar("ROLE_cliente").get());
+		cliente.setRoles(roles);
 		clienteService.persistir(cliente);
 		
-		clienteDto.setSenha(cliente.getSenha());
+		clienteDto.setSenha(cliente.getPassword());
 		response.setData(clienteDto);
 		return ResponseEntity.ok(response);
 	}
@@ -90,8 +109,10 @@ public class UsuarioController {
 			@Valid @RequestBody BancoDto bancoDto, BindingResult result) {
 		log.info("Cadastrando banco: {}", bancoDto.toString());
 		
-		if (bancoDto.getCodigo() != null && bancoService.buscar(bancoDto.getCodigo()).isPresent())
+		if (bancoDto.getCodigo() != null && bancoService.buscarPorCodigo(bancoDto.getCodigo()).isPresent())
 			result.addError(new ObjectError("banco", "error.existing.code"));
+		if (bancoDto.getNomeUsuario() != null && bancoService.buscarPorNomeUsuario(bancoDto.getNomeUsuario()).isPresent())
+			result.addError(new ObjectError("banco", "error.existing.username"));
 		
 		Response<BancoDto> response = new Response<BancoDto>();
 		if (result.hasErrors()) {
@@ -103,11 +124,20 @@ public class UsuarioController {
 		
 		Banco banco = new Banco();
 		banco.setCodigo(bancoDto.getCodigo());
-		banco.setNome(bancoDto.getNome());
-		banco.setSenha(SenhaUtils.criptografar(bancoDto.getSenha()));
+		banco.setNome(bancoDto.getNomeBanco());
+		banco.setEmail(bancoDto.getEmail());
+		banco.setPassword("{bcrypt}" + SenhaUtils.criptografar(bancoDto.getSenha()));
+		banco.setUsername(bancoDto.getNomeUsuario());
+		banco.setAccountNonExpired(true);
+		banco.setAccountNonLocked(true);
+		banco.setCredentialsNonExpired(true);
+		banco.setEnabled(true);
+		List<Role> roles = new ArrayList<Role>();
+		roles.add(roleService.buscar("ROLE_banco").get());
+		banco.setRoles(roles);
 		bancoService.persistir(banco);
 		
-		bancoDto.setSenha(banco.getSenha());
+		bancoDto.setSenha(banco.getPassword());
 		response.setData(bancoDto);
 		return ResponseEntity.ok(response);
 	}

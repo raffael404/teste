@@ -36,7 +36,7 @@ class BancoRepositoryTest {
 	
 	@Test
 	void testBuscarPorCodigo() {
-		Banco banco = this.bancoRepository.findById(CODIGO).get();
+		Banco banco = this.bancoRepository.findByCodigo(CODIGO).get();
 		assertEquals(CODIGO, banco.getCodigo());
 	}
 

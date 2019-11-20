@@ -36,7 +36,7 @@ class ClienteServiceTest {
 	@Test
 	void testBuscar() {
 		this.clienteService.persistir(TesteUtils.criarCliente(TesteUtils.CLIENTE_70336818017));
-		Optional<Cliente> cliente = clienteService.buscar(CPF);
+		Optional<Cliente> cliente = clienteService.buscarPorCpf(CPF);
 		assertTrue(cliente.isPresent());
 	}
 	
@@ -50,7 +50,7 @@ class ClienteServiceTest {
 	void testRemover() {
 		this.clienteService.persistir(TesteUtils.criarCliente(TesteUtils.CLIENTE_70336818017));
 		this.clienteService.remover(CPF);
-		Optional<Cliente> cliente = clienteService.buscar(CPF);
+		Optional<Cliente> cliente = clienteService.buscarPorCpf(CPF);
 		assertFalse(cliente.isPresent());
 	}
 

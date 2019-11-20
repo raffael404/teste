@@ -1,9 +1,14 @@
 package com.infoway.banking.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+import org.springframework.transaction.annotation.Transactional;
 
 import com.infoway.banking.entities.Cliente;
 
-public interface ClienteRepository extends JpaRepository<Cliente, String> {
-	
+public interface ClienteRepository extends UserBaseRepository<Cliente> {
+	@Transactional(readOnly = true)
+	Optional<Cliente> findByCpf(String cpf);
+	@Transactional
+	void deleteByCpf(String cpf);
 }

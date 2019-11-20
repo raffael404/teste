@@ -7,13 +7,12 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "cliente")
-public class Cliente extends Usuario implements Serializable {
+public class Cliente extends User implements Serializable {
 	
 	private static final long serialVersionUID = -6305361764541275910L;
 	
@@ -23,8 +22,7 @@ public class Cliente extends Usuario implements Serializable {
 	
 	public Cliente() {}
 
-	@Id
-	@Column(name = "cpf", nullable = false, length = 11)
+	@Column(name = "cpf", unique = true, nullable = false, length = 11)
 	public String getCpf() {
 		return cpf;
 	}

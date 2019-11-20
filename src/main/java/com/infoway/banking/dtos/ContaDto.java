@@ -7,13 +7,12 @@ import org.hibernate.validator.constraints.Length;
 
 import com.infoway.banking.entities.Conta;
 
-public class ContaDto extends DadoProtegido {
+public class ContaDto {
 	
 	private Long id;
 	private String numero;
 	private Double saldo;
 	private String codigoBanco;
-	private String cpfCliente;
 	
 	public ContaDto() {
 		this.saldo = 0.0;
@@ -24,7 +23,6 @@ public class ContaDto extends DadoProtegido {
 		this.numero = conta.getNumero();
 		this.saldo = conta.getSaldo();
 		this.codigoBanco = conta.getBanco().getCodigo();
-		this.cpfCliente = conta.getCliente().getCpf();
 	}
 
 	public Long getId() {
@@ -58,19 +56,11 @@ public class ContaDto extends DadoProtegido {
 	public void setCodigoBanco(String codigoBanco) {
 		this.codigoBanco = codigoBanco;
 	}
-	
-	@NotEmpty(message = "error.empty.client.cpf")
-	public String getCpfCliente() {
-		return cpfCliente;
-	}
-	public void setCpfCliente(String cpfCliente) {
-		this.cpfCliente = cpfCliente;
-	}
 
 	@Override
 	public String toString() {
 		return "ContaDto [id=" + id + ", numero=" + numero + ", saldo=" + saldo + ", codigoBanco="
-				+ codigoBanco + ", cpfCliente=" + cpfCliente + "]";
+				+ codigoBanco + "]";
 	}
 	
 }
